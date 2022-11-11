@@ -10,3 +10,6 @@
 [submodule "src/libs/date"]
 	path = src/libs/date
 	url = https://github.com/HowardHinnant/date.git
+[submodule "openocd-code"]
+	path = openocd-code
+	url = https://git.code.sf.net/p/openocd/code
