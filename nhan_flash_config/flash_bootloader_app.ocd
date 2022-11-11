@@ -1,0 +1,7 @@
+
+init
+
+program /home/nhanmai/Pine64/InfiniTime/build/output/bootloader.bin verify 0x00000000
+program /home/nhanmai/Pine64/InfiniTime/build/output/pinetime-mcuboot-app-image-1.11.0.bin verify 0x00008000
+
+reset
