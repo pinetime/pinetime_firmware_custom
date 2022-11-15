@@ -58,7 +58,13 @@ void Battery::SaadcInit() {
   APP_ERROR_CHECK(nrfx_saadc_channel_init(0, &adcChannelConfig));
   APP_ERROR_CHECK(nrfx_saadc_buffer_convert(&saadc_value, 1));
 }
-
+uint16_t Battery :: readBatteryVoltage(void)
+{
+  uint16_t readVoltage=0;
+  nrfx_saadc_evt_t const* p_event;
+  readVoltage = p_event->data.done.p_buffer[0] * (8 * 600) / 1024;
+  return readVoltage;
+}
 void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
   const uint16_t battery_max = 4180; // maximum voltage of battery ( max charging voltage is 4.21 )
   const uint16_t battery_min = 3200; // minimum voltage of battery before shutdown ( depends on the battery )

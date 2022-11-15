@@ -13,6 +13,7 @@ namespace Pinetime {
       void ReadPowerState();
       void MeasureVoltage();
       void Register(System::SystemTask* systemTask);
+      uint16_t readBatteryVoltage(void);
 
       uint8_t PercentRemaining() const {
         return percentRemaining;
