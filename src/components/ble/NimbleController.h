@@ -10,6 +10,7 @@
 #include "components/ble/AlertNotificationClient.h"
 #include "components/ble/AlertNotificationService.h"
 #include "components/ble/BatteryInformationService.h"
+#include "components/ble/BleAppCustomService.h"
 #include "components/ble/CurrentTimeClient.h"
 #include "components/ble/CurrentTimeService.h"
 #include "components/ble/DeviceInformationService.h"
@@ -99,6 +100,7 @@ namespace Pinetime {
       WeatherService weatherService;
       NavigationService navService;
       BatteryInformationService batteryInformationService;
+      BleAppCustomService bleAppCustomService;
       ImmediateAlertService immediateAlertService;
       HeartRateService heartRateService;
       MotionService motionService;
