@@ -13,6 +13,3 @@
 [submodule "openocd-code"]
 	path = openocd-code
 	url = https://git.code.sf.net/p/openocd/code
-[submodule "code"]
-	path = code
-	url = https://git.code.sf.net/p/openocd/code
