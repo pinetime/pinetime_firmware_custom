@@ -9,6 +9,9 @@ void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps)
 
   if (service != nullptr && (this->x != x || this->y != y || this->z != z)) {
     service->OnNewMotionValues(x, y, z);
+    _service->OnNewRollValues(x);
+    _service->OnNewPitchValues(y);
+    _service->OnNewYawValues(z);
   }
 
   this->x = x;
@@ -84,4 +87,7 @@ void MotionController::Init(Pinetime::Drivers::Bma421::DeviceTypes types) {
 }
 void MotionController::SetService(Pinetime::Controllers::MotionService* service) {
   this->service = service;
+}
+void MotionController::_SetService(Pinetime::Controllers::BleAppCustomService* _service) {
+  this->_service = _service;
 }

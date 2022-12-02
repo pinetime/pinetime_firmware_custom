@@ -49,6 +49,7 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
     batteryInformationService {batteryController},
     immediateAlertService {systemTask, notificationManager},
     heartRateService {systemTask, heartRateController},
+    bleAppCustomService {systemTask, motionController},
     motionService {systemTask, motionController},
     fsService {systemTask, fs},
     serviceDiscovery({&currentTimeClient, &alertNotificationClient}) {
@@ -322,15 +323,23 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
                    event->subscribe.cur_notify,
                    event->subscribe.prev_indicate);
 
-      if (event->subscribe.reason == BLE_GAP_SUBSCRIBE_REASON_TERM) {
+      if (event->subscribe.reason == BLE_GAP_SUBSCRIBE_REASON_TERM) 
+      {
         heartRateService.UnsubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
         motionService.UnsubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
-      } else if (event->subscribe.prev_notify == 0 && event->subscribe.cur_notify == 1) {
+        bleAppCustomService.UnsubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
+      } 
+      else if (event->subscribe.prev_notify == 0 && event->subscribe.cur_notify == 1) 
+      {
         heartRateService.SubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
         motionService.SubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
-      } else if (event->subscribe.prev_notify == 1 && event->subscribe.cur_notify == 0) {
+        bleAppCustomService.SubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
+      } 
+      else if (event->subscribe.prev_notify == 1 && event->subscribe.cur_notify == 0) 
+      {
         heartRateService.UnsubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
         motionService.UnsubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
+        bleAppCustomService.UnsubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);      
       }
       break;
 

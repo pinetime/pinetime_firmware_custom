@@ -1,24 +1,17 @@
 #include "components/ble/BleAppCustomService.h"
 #include "components/heartrate/HeartRateController.h"
+#include "components/motion/MotionController.h"
 #include "systemtask/SystemTask.h"
 #include <nrf_log.h>
 
 using namespace Pinetime::Controllers;
 
+constexpr ble_uuid16_t BleAppCustomService::appCustomServiceUuid;
+constexpr ble_uuid16_t BleAppCustomService::rollValueUuid;
+constexpr ble_uuid16_t BleAppCustomService::pitchValueUuid;
+constexpr ble_uuid16_t BleAppCustomService::yawValueUuid;
 namespace 
 {
-    constexpr ble_uuid128_t CharUuid(uint8_t x, uint8_t y)
-    {
-        return ble_uuid128_t 
-        {
-            .u = {.type = BLE_UUID_TYPE_128},
-            .value = {0x97,0xb4,0x1c,0xac,0x12,0x10,0x9e,0x81,0x34,0x4a,0x03,0x88,x,y,0xb5,0x98}
-        };
-    }
-    constexpr ble_uuid128_t appCustomServiceUuid {CharUuid(0x7e,0x4e)};
-    constexpr ble_uuid128_t rollValueUuid {CharUuid(0x00,0x01)};
-    constexpr ble_uuid128_t pitchValueUuid {CharUuid(0x02,0x03)};
-    constexpr ble_uuid128_t yawValueUuid {CharUuid(0x04,0x05)};
 
     int BleAppCustomServiceCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg)
     {
@@ -29,21 +22,24 @@ namespace
     }
 }
 
-BleAppCustomService::BleAppCustomService() 
-: characteristicDefinition 
+BleAppCustomService::BleAppCustomService(Pinetime::System::SystemTask& system, 
+                                        Controllers::MotionController& motionController) 
+:   system {system},
+    motionController {motionController},
+    characteristicDefinition 
     {
         {
             .uuid = &rollValueUuid.u,
             .access_cb = BleAppCustomServiceCallback,
             .arg = this,
-            .flags = BLE_GATT_CHR_F_READ,
+            .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY,
             .val_handle = &rollValueHandle,
         },
         {
             .uuid = &pitchValueUuid.u,
             .access_cb = BleAppCustomServiceCallback,
             .arg = this,
-            .flags = BLE_GATT_CHR_F_READ,
+            .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY,
             .val_handle = &pitchValueHandle,
 
         },
@@ -51,7 +47,7 @@ BleAppCustomService::BleAppCustomService()
             .uuid = &yawValueUuid.u,
             .access_cb = BleAppCustomServiceCallback,
             .arg = this,
-            .flags = BLE_GATT_CHR_F_READ,
+            .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY,
             .val_handle = &yawValueHandle,
         },
         {0}
@@ -66,7 +62,7 @@ BleAppCustomService::BleAppCustomService()
       {0},
     } 
     {
-
+        motionController._SetService(this);
     }
 
 void BleAppCustomService::Init() 
@@ -83,29 +79,99 @@ int Pinetime::Controllers::BleAppCustomService::OnAppCustomServiceRequest(uint16
                                             uint16_t attributeHandle, 
                                             ble_gatt_access_ctxt* context)
 {
-    uint16_t buffer[6];
     if(attributeHandle=rollValueHandle)
     {
-        NRF_LOG_INFO("roll value : handle = %d", rollValueHandle);
-        buffer[0] = 1;
-        int res = os_mbuf_append(context->om, buffer, 2);
+        int16_t rollBuffer[1] = {motionController.X()};
+        int res = os_mbuf_append(context->om, rollBuffer, 1 * sizeof(int16_t));
         return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
     }
 
-    if(attributeHandle=pitchValueHandle)
+    else if(attributeHandle=pitchValueHandle)
     {
-        NRF_LOG_INFO("pitch value : handle = %d", pitchValueHandle);
-        buffer[1] = 2;
-        int res = os_mbuf_append(context->om, &buffer[2], 2);
+        int16_t pitchBuffer[1]= {motionController.Y()};
+        int res = os_mbuf_append(context->om, pitchBuffer, 1 * sizeof(int16_t));
         return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
     }
 
-    if(attributeHandle = yawValueHandle)
+    else if(attributeHandle = yawValueHandle)
     {
-        NRF_LOG_INFO("yaw value : handle = %d", yawValueHandle);
-        buffer[3] = 3;
-        int res = os_mbuf_append(context->om, &buffer[4],2);
+        int16_t yawBuffer[1] = {motionController.Z()};
+        int res = os_mbuf_append(context->om, yawBuffer, 1 * sizeof(int16_t));
         return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
     }
     return 0;
+}
+
+void BleAppCustomService::OnNewRollValues(int16_t x)
+{
+    if (!rollValuesNoficationEnabled)
+    return;
+
+    int16_t buffer[1] = {motionController.X()};
+    auto* om = ble_hs_mbuf_from_flat(buffer, 1 * sizeof(int16_t));
+
+    uint16_t connectionHandle = system.nimble().connHandle();
+
+    if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) 
+    {
+        return;
+    }
+
+    ble_gattc_notify_custom(connectionHandle, rollValueHandle, om);
+}
+
+void BleAppCustomService::OnNewPitchValues(int16_t y)
+{
+    if (!pitchValuesNoficationEnabled)
+    return;
+
+    int16_t buffer[1] = {motionController.Y()};
+    auto* om = ble_hs_mbuf_from_flat(buffer, 1 * sizeof(int16_t));
+
+    uint16_t connectionHandle = system.nimble().connHandle();
+
+    if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) 
+    {
+        return;
+    }
+
+    ble_gattc_notify_custom(connectionHandle, pitchValueHandle, om);
+}
+
+void BleAppCustomService::OnNewYawValues(int16_t z)
+{
+    if (!yawValuesNoficationEnabled)
+    return;
+
+    int16_t buffer[1] = {motionController.Z()};
+    auto* om = ble_hs_mbuf_from_flat(buffer, 1 * sizeof(int16_t));
+
+    uint16_t connectionHandle = system.nimble().connHandle();
+
+    if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) 
+    {
+        return;
+    }
+
+    ble_gattc_notify_custom(connectionHandle, yawValueHandle, om);
+}
+
+void BleAppCustomService::SubscribeNotification(uint16_t connectionHandle, uint16_t attributeHandle) 
+{
+    if (attributeHandle == rollValueHandle)
+    rollValuesNoficationEnabled = true;
+    else if (attributeHandle == pitchValueHandle)
+    pitchValuesNoficationEnabled = true;
+    else if (attributeHandle == yawValueHandle)
+    yawValuesNoficationEnabled = true;
+}
+
+void BleAppCustomService::UnsubscribeNotification(uint16_t connectionHandle, uint16_t attributeHandle) 
+{
+    if (attributeHandle == rollValueHandle)
+    rollValuesNoficationEnabled = false;
+    else if (attributeHandle == pitchValueHandle)
+    pitchValuesNoficationEnabled = false;
+    else if (attributeHandle == yawValueHandle)
+    yawValuesNoficationEnabled = false;
 }
