@@ -16,10 +16,13 @@ namespace Pinetime
     namespace Controllers
     {
         class MotionController;
+        class HeartRateController;
         class BleAppCustomService
         {
             public:
-                BleAppCustomService(Pinetime::System::SystemTask& system, Controllers::MotionController& motionController);
+                BleAppCustomService(Pinetime::System::SystemTask& system, 
+                Controllers::MotionController& motionController,
+                Controllers::HeartRateController& heartBitController);
                 void Init();
                 int OnAppCustomServiceRequest(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt* context);
                 void SubscribeNotification(uint16_t connectionHandle, uint16_t attributeHandle);
@@ -27,6 +30,7 @@ namespace Pinetime
                 void OnNewRollValues(int16_t x);
                 void OnNewPitchValues(int16_t y);
                 void OnNewYawValues(int16_t z);
+                void OnNewHeartBitValues (uint8_t heartBitValue);
 
 
             private:
@@ -60,6 +64,7 @@ namespace Pinetime
                 struct ble_gatt_chr_def characteristicDefinition[5];
                 struct ble_gatt_svc_def serviceDefinition[2];
                 Controllers::MotionController& motionController;
+                Controllers::HeartRateController& heartBitController;
                 uint16_t rollValueHandle;
                 uint16_t pitchValueHandle;
                 uint16_t yawValueHandle;
@@ -67,6 +72,7 @@ namespace Pinetime
                 std::atomic_bool rollValuesNoficationEnabled {false};
                 std::atomic_bool pitchValuesNoficationEnabled {false};
                 std::atomic_bool yawValuesNoficationEnabled {false};
+                std::atomic_bool heartBitNotificationEnabled {false};
         };
     }
 }

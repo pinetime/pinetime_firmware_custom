@@ -49,7 +49,7 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
     batteryInformationService {batteryController},
     immediateAlertService {systemTask, notificationManager},
     heartRateService {systemTask, heartRateController},
-    bleAppCustomService {systemTask, motionController},
+    bleAppCustomService {systemTask, motionController,heartRateController},
     motionService {systemTask, motionController},
     fsService {systemTask, fs},
     serviceDiscovery({&currentTimeClient, &alertNotificationClient}) {

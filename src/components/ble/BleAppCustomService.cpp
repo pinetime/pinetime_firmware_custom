@@ -27,9 +27,11 @@ namespace
 }
 
 BleAppCustomService::BleAppCustomService(Pinetime::System::SystemTask& system, 
-                                        Controllers::MotionController& motionController) 
+                                        Controllers::MotionController& motionController,
+                                        Controllers::HeartRateController& heartBitController) 
 :   system {system},
     motionController {motionController},
+    heartBitController {heartBitController},
     characteristicDefinition 
     {
         {
@@ -90,24 +92,30 @@ int Pinetime::Controllers::BleAppCustomService::OnAppCustomServiceRequest(uint16
                                             uint16_t attributeHandle, 
                                             ble_gatt_access_ctxt* context)
 {
-    if(attributeHandle=rollValueHandle)
+    if(attributeHandle==rollValueHandle)
     {
         int16_t rollBuffer[1] = {motionController.X()};
         int res = os_mbuf_append(context->om, rollBuffer, 1 * sizeof(int16_t));
         return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
     }
 
-    else if(attributeHandle=pitchValueHandle)
+    else if(attributeHandle==pitchValueHandle)
     {
         int16_t pitchBuffer[1]= {motionController.Y()};
         int res = os_mbuf_append(context->om, pitchBuffer, 1 * sizeof(int16_t));
         return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
     }
 
-    else if(attributeHandle = yawValueHandle)
+    else if(attributeHandle == yawValueHandle)
     {
         int16_t yawBuffer[1] = {motionController.Z()};
         int res = os_mbuf_append(context->om, yawBuffer, 1 * sizeof(int16_t));
+        return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
+    }
+    else if(attributeHandle == heartBitHandle)
+    {
+        uint8_t heartBitBuffer[2]={0, heartBitController.HeartRate()}; // [0] = flags, [1] = hr value
+        int res = os_mbuf_append(context->om, heartBitBuffer, 2);
         return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
     }
     return 0;
@@ -167,6 +175,25 @@ void BleAppCustomService::OnNewYawValues(int16_t z)
     ble_gattc_notify_custom(connectionHandle, yawValueHandle, om);
 }
 
+void BleAppCustomService::OnNewHeartBitValues (uint8_t heartBitValue)
+{
+    if (!heartBitNotificationEnabled)
+    {
+        return;
+    }
+
+  uint8_t buffer[2] = {0, heartBitController.HeartRate()}; // [0] = flags, [1] = hr value
+  auto* om = ble_hs_mbuf_from_flat(buffer, 2);
+
+  uint16_t connectionHandle = system.nimble().connHandle();
+
+  if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) 
+  {
+    return;
+  }
+  ble_gattc_notify_custom(connectionHandle, heartBitHandle, om);
+}
+
 void BleAppCustomService::SubscribeNotification(uint16_t connectionHandle, uint16_t attributeHandle) 
 {
     if (attributeHandle == rollValueHandle)
@@ -175,6 +202,8 @@ void BleAppCustomService::SubscribeNotification(uint16_t connectionHandle, uint1
     pitchValuesNoficationEnabled = true;
     else if (attributeHandle == yawValueHandle)
     yawValuesNoficationEnabled = true;
+    else if (attributeHandle == heartBitHandle)
+    heartBitNotificationEnabled = true;
 }
 
 void BleAppCustomService::UnsubscribeNotification(uint16_t connectionHandle, uint16_t attributeHandle) 
@@ -185,4 +214,6 @@ void BleAppCustomService::UnsubscribeNotification(uint16_t connectionHandle, uin
     pitchValuesNoficationEnabled = false;
     else if (attributeHandle == yawValueHandle)
     yawValuesNoficationEnabled = false;
+    else if (attributeHandle == heartBitHandle)
+    heartBitNotificationEnabled = false;
 }
