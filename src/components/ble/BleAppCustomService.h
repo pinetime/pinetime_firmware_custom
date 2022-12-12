@@ -52,12 +52,18 @@ namespace Pinetime
                     .u {.type = BLE_UUID_TYPE_16}, 
                     .value {0x1114}
                 };
-                struct ble_gatt_chr_def characteristicDefinition[4];
+                static constexpr ble_uuid16_t heartBitUuid 
+                {
+                    .u {.type = BLE_UUID_TYPE_16}, 
+                    .value {0x1115}
+                };
+                struct ble_gatt_chr_def characteristicDefinition[5];
                 struct ble_gatt_svc_def serviceDefinition[2];
                 Controllers::MotionController& motionController;
                 uint16_t rollValueHandle;
                 uint16_t pitchValueHandle;
                 uint16_t yawValueHandle;
+                uint16_t heartBitHandle;
                 std::atomic_bool rollValuesNoficationEnabled {false};
                 std::atomic_bool pitchValuesNoficationEnabled {false};
                 std::atomic_bool yawValuesNoficationEnabled {false};

@@ -10,10 +10,14 @@ constexpr ble_uuid16_t BleAppCustomService::appCustomServiceUuid;
 constexpr ble_uuid16_t BleAppCustomService::rollValueUuid;
 constexpr ble_uuid16_t BleAppCustomService::pitchValueUuid;
 constexpr ble_uuid16_t BleAppCustomService::yawValueUuid;
+constexpr ble_uuid16_t BleAppCustomService::heartBitUuid;
 namespace 
 {
 
-    int BleAppCustomServiceCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg)
+    int BleAppCustomServiceCallback(uint16_t conn_handle, 
+                                    uint16_t attr_handle, 
+                                    struct ble_gatt_access_ctxt* ctxt, 
+                                    void* arg)
     {
         auto* bleAppCustomService = static_cast<BleAppCustomService*>(arg);
         return bleAppCustomService->OnAppCustomServiceRequest(conn_handle,
@@ -49,6 +53,13 @@ BleAppCustomService::BleAppCustomService(Pinetime::System::SystemTask& system,
             .arg = this,
             .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY,
             .val_handle = &yawValueHandle,
+        },
+        {
+            .uuid = &heartBitUuid.u,
+            .access_cb = BleAppCustomServiceCallback,
+            .arg = this,
+            .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY,
+            .val_handle = &heartBitHandle,
         },
         {0}
     },
