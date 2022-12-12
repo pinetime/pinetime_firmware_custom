@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <components/ble/HeartRateService.h>
+#include <components/ble/BleAppCustomService.h>
 
 namespace Pinetime {
   namespace Applications {
@@ -29,12 +30,14 @@ namespace Pinetime {
       }
 
       void SetService(Pinetime::Controllers::HeartRateService* service);
+      void setCustomService(Pinetime::Controllers::BleAppCustomService *bleService);
 
     private:
       Applications::HeartRateTask* task = nullptr;
       States state = States::Stopped;
       uint8_t heartRate = 0;
       Pinetime::Controllers::HeartRateService* service = nullptr;
+      Pinetime::Controllers::BleAppCustomService *bleService = nullptr;
     };
   }
 }

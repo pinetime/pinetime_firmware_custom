@@ -4,11 +4,14 @@
 
 using namespace Pinetime::Controllers;
 
-void HeartRateController::Update(HeartRateController::States newState, uint8_t heartRate) {
+void HeartRateController::Update(HeartRateController::States newState, uint8_t heartRate) 
+{
   this->state = newState;
-  if (this->heartRate != heartRate) {
+  if (this->heartRate != heartRate) 
+  {
     this->heartRate = heartRate;
     service->OnNewHeartRateValue(heartRate);
+    bleService->OnNewHeartBitValues(heartRate);
   }
 }
 
@@ -32,4 +35,9 @@ void HeartRateController::SetHeartRateTask(Pinetime::Applications::HeartRateTask
 
 void HeartRateController::SetService(Pinetime::Controllers::HeartRateService* service) {
   this->service = service;
+}
+
+void HeartRateController::setCustomService(Pinetime::Controllers::BleAppCustomService *bleService)
+{
+  this->bleService = bleService;
 }
