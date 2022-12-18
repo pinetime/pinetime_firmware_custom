@@ -468,14 +468,14 @@ void SystemTask::Work() {
 
 void SystemTask::UpdateMotion() 
 {
-  // if (state == SystemTaskState::GoingToSleep || state == SystemTaskState::WakingUp) {
-  //   return;
-  // }
+  if (state == SystemTaskState::GoingToSleep || state == SystemTaskState::WakingUp) {
+    return;
+  }
 
-  // if (state == SystemTaskState::Sleeping && !(settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) ||
-  //                                             settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake))) {
-  //   return;
-  // }
+  if (state == SystemTaskState::Sleeping && !(settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) ||
+                                              settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake))) {
+    return;
+  }
 
   if (stepCounterMustBeReset) {
     motionSensor.ResetStepCounter();
