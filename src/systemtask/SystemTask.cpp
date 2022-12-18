@@ -225,6 +225,17 @@ void SystemTask::Work() {
           break;
         case Messages::UpdateTimeOut:
           xTimerChangePeriod(dimTimer, pdMS_TO_TICKS(settingsController.GetScreenTimeOut() - 2000), 0);
+          //disable sleeping when 30s setting timeout is chosen
+          if(settingsController.GetScreenTimeOut() == (uint16_t)30000U)
+          {
+            message = Messages::DisableSleeping;
+            doNotGoToSleep = true;
+          }
+          else
+          {
+            message = Messages::EnableSleeping;
+            doNotGoToSleep = false;
+          }
           break;
         case Messages::GoToRunning:
           spi.Wakeup();

@@ -56,12 +56,12 @@ SettingDisplay::SettingDisplay(Pinetime::Applications::DisplayApp* app, Pinetime
     {
       sprintf(buffer, "%2ds", options[i] / 1000);//display screen-off timeout in s
     }
-    lv_checkbox_set_text(cbOption[i], buffer);
+    lv_checkbox_set_text(cbOption[i], buffer); //display buffer
     cbOption[i]->user_data = this;
     lv_obj_set_event_cb(cbOption[i], event_handler);
     SetRadioButtonStyle(cbOption[i]);
 
-    //set check box for each of screen-off timeouts have been chosen
+    //set check box for each of screen-on timeouts have been chosen
     if (settingsController.GetScreenTimeOut() == options[i]) 
     {
       lv_checkbox_set_checked(cbOption[i], true);
