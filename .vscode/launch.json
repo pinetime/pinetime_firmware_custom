@@ -44,7 +44,7 @@
         {
             "cwd": "${workspaceRoot}",
             // TODO: find better way to get latest build filename
-            "executable": "./build/src/pinetime-app-1.3.0.out",
+            "executable": "${command:cmake.launchTargetPath}",
             "name": "Debug OpenOCD ST-LINK pinetime-app-1.3.0.out",
             "request": "launch",
             "type": "cortex-debug",
@@ -52,13 +52,30 @@
             "servertype": "openocd",
             "runToMain": true,
             // Only use armToolchainPath if your arm-none-eabi-gdb is not in your path (some GCC packages does not contain arm-none-eabi-gdb)
-            "armToolchainPath": "${workspaceRoot}/../gcc-arm-none-eabi-10.3-2021.10/bin",
+            "armToolchainPath": "/usr/bin/gdb-multiarch",
             "svdFile": "${workspaceRoot}/nrf52.svd",
             "configFiles": [
                 "interface/stlink.cfg",
                 "target/nrf52.cfg"
             ],
-        }
+        },
+        {
+            "cwd": "${workspaceRoot}",
+            "executable": "build/output/src/pinetime-app-1.11.0.out",
+            "name": "Debug with gdb-multiarch",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "configFiles": 
+            [
+                "interface/stlink.cfg",
+                "target/nrf52.cfg",
+            ],
+            "searchDir": [],
+            "gdbPath": "/usr/bin/gdb-multiarch",
+            "runToEntryPoint": "main",
+            "showDevDebugOutput": "raw"
+        },
 
     ]
 }
