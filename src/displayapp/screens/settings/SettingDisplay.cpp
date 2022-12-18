@@ -44,15 +44,26 @@ SettingDisplay::SettingDisplay(Pinetime::Applications::DisplayApp* app, Pinetime
   lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
 
   char buffer[12];
-  for (unsigned int i = 0; i < options.size(); i++) {
+  for (unsigned int i = 0; i < options.size(); i++) 
+  {
     cbOption[i] = lv_checkbox_create(container1, nullptr);
-    sprintf(buffer, "%2ds", options[i] / 1000);
+    // change to display "always on" when 30s is chosen
+    if(i==5)
+    {
+      sprintf(buffer, "ALW");
+    }
+    else
+    {
+      sprintf(buffer, "%2ds", options[i] / 1000);//display screen-off timeout in s
+    }
     lv_checkbox_set_text(cbOption[i], buffer);
     cbOption[i]->user_data = this;
     lv_obj_set_event_cb(cbOption[i], event_handler);
     SetRadioButtonStyle(cbOption[i]);
 
-    if (settingsController.GetScreenTimeOut() == options[i]) {
+    //set check box for each of screen-off timeouts have been chosen
+    if (settingsController.GetScreenTimeOut() == options[i]) 
+    {
       lv_checkbox_set_checked(cbOption[i], true);
     }
   }
