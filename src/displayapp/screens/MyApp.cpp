@@ -29,6 +29,11 @@ namespace
     auto* screen = static_cast<MyApp*>(obj->user_data);
     screen->OnStartStopEvent(event);
   }
+  void btnHrChartEventHandler(lv_obj_t* obj, lv_event_t event)
+  {
+    auto* screen = static_cast<MyApp*>(obj->user_data);
+    screen->OnHrChartEvent(event);
+  }
 }
 
 MyApp::MyApp(Pinetime::Applications::DisplayApp* app,
@@ -56,7 +61,7 @@ MyApp::MyApp(Pinetime::Applications::DisplayApp* app,
     lv_obj_align(label_y, label_x, LV_ALIGN_IN_LEFT_MID,0, 25);
     //create z label
     label_z = lv_label_create(lv_scr_act(), nullptr);
-    lv_label_set_text_static(label_z, "x value: ");
+    lv_label_set_text_static(label_z, "z value: ");
     lv_obj_align(label_z, label_y, LV_ALIGN_IN_LEFT_MID,0, 25);
 
     //create heart rate label
@@ -82,13 +87,28 @@ MyApp::MyApp(Pinetime::Applications::DisplayApp* app,
 
     lv_obj_align(label_status, label_hr, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
 
+    //create start-stop button
     btn_startStop = lv_btn_create(lv_scr_act(), nullptr);
     btn_startStop->user_data = this;
-    lv_obj_set_height(btn_startStop, 50);
+    //set height and width for the start-stop button
+    lv_obj_set_height(btn_startStop, 45);
+    lv_obj_set_width(btn_startStop, 70);
     lv_obj_set_event_cb(btn_startStop, btnStartStopEventHandler);
-    lv_obj_align(btn_startStop, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
-
+    lv_obj_align(btn_startStop, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
     label_startStop = lv_label_create(btn_startStop, nullptr);
+
+    //create heart rate chart button
+    btn_hrChart = lv_btn_create(lv_scr_act(), nullptr);
+    btn_hrChart->user_data = this;
+    //set height and width for the start-stop button
+    lv_obj_set_height(btn_hrChart, 45);
+    lv_obj_set_width(btn_hrChart, 70);
+    lv_obj_set_event_cb(btn_hrChart, btnHrChartEventHandler);
+    lv_obj_align(btn_hrChart, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
+    label_hrChart = lv_label_create(btn_hrChart, nullptr);
+    lv_label_set_text_static(label_hrChart, "Chart");
+
+
     UpdateStartStopButton(isHrRunning);
     if (isHrRunning)
       systemTask.PushMessage(Pinetime::System::Messages::DisableSleeping);
@@ -163,6 +183,14 @@ void MyApp::OnStartStopEvent(lv_event_t event)
       lv_obj_set_style_local_text_color(serY, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
       lv_obj_set_style_local_text_color(serZ, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
     }
+  }
+}
+
+void MyApp::OnHrChartEvent(lv_event_t event)
+{
+  if (event == LV_EVENT_CLICKED)
+  {
+
   }
 }
 

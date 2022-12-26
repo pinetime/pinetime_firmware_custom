@@ -28,7 +28,10 @@ namespace Pinetime
                     ~MyApp() override;
                     //continously app updating
                     void Refresh() override;
+                    //handle whenever start-stop button pressed
                     void OnStartStopEvent(lv_event_t event);
+                    //handle whenever chart button pressed
+                    void OnHrChartEvent(lv_event_t event);
 
                 private:
                     Controllers::HeartRateController& heartRateController;
@@ -44,6 +47,8 @@ namespace Pinetime
                     lv_obj_t* btn_startStop;
                     lv_obj_t* label_startStop;
                     lv_task_t* taskRefresh;
+                    lv_obj_t* btn_hrChart;
+                    lv_obj_t* label_hrChart;
                     
                     //MOTION LABELS
                     //X value
