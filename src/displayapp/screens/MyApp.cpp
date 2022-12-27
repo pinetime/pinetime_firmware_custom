@@ -3,6 +3,7 @@
 #include <components/heartrate/HeartRateController.h>
 #include "displayapp/DisplayApp.h"
 #include "displayapp/InfiniTimeTheme.h"
+#include "displayapp/screens/Symbols.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -34,6 +35,11 @@ namespace
     auto* screen = static_cast<MyApp*>(obj->user_data);
     screen->OnHrChartEvent(event);
   }
+  void btnBackEventHandler(lv_obj_t* obj, lv_event_t event)
+  {
+    auto* screen = static_cast<MyApp*>(obj->user_data);
+    screen->OnBackEvent(event);
+  }
 }
 
 MyApp::MyApp(Pinetime::Applications::DisplayApp* app,
@@ -49,20 +55,20 @@ MyApp::MyApp(Pinetime::Applications::DisplayApp* app,
     
     //create bpm label
     label_bpm = lv_label_create(lv_scr_act(), nullptr);
-    lv_label_set_text_static(label_bpm, "Heart rate: ");
-    lv_obj_align(label_bpm, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
+    lv_label_set_text_static(label_bpm, "* Heart rate: ");
+    lv_obj_align(label_bpm, nullptr, LV_ALIGN_IN_TOP_LEFT, 10, 10);
     //create x label
     label_x = lv_label_create(lv_scr_act(), nullptr);
-    lv_label_set_text_static(label_x, "x value: ");
-    lv_obj_align(label_x, label_bpm, LV_ALIGN_IN_LEFT_MID,0, 25);
+    lv_label_set_text_static(label_x, "* X value: ");
+    lv_obj_align(label_x, label_bpm, LV_ALIGN_IN_LEFT_MID,0, 30);
     //create y label
     label_y = lv_label_create(lv_scr_act(), nullptr);
-    lv_label_set_text_static(label_y, "y value: ");
-    lv_obj_align(label_y, label_x, LV_ALIGN_IN_LEFT_MID,0, 25);
+    lv_label_set_text_static(label_y, "* Y value: ");
+    lv_obj_align(label_y, label_x, LV_ALIGN_IN_LEFT_MID,0, 30);
     //create z label
     label_z = lv_label_create(lv_scr_act(), nullptr);
-    lv_label_set_text_static(label_z, "z value: ");
-    lv_obj_align(label_z, label_y, LV_ALIGN_IN_LEFT_MID,0, 25);
+    lv_label_set_text_static(label_z, "* Z value: ");
+    lv_obj_align(label_z, label_y, LV_ALIGN_IN_LEFT_MID,0, 30);
 
     //create heart rate label
     label_hr = lv_label_create(lv_scr_act(), nullptr);
@@ -108,7 +114,6 @@ MyApp::MyApp(Pinetime::Applications::DisplayApp* app,
     label_hrChart = lv_label_create(btn_hrChart, nullptr);
     lv_label_set_text_static(label_hrChart, "Chart");
 
-
     UpdateStartStopButton(isHrRunning);
     if (isHrRunning)
       systemTask.PushMessage(Pinetime::System::Messages::DisableSleeping);
@@ -140,7 +145,7 @@ void MyApp::Refresh()
   lv_obj_align(label_status, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, -70);
 
   //handle motion values
-  if(startMotonSensor==1)
+  if(startMotionSensor==1)
   {
     lv_label_set_text_fmt(serX, "%03d", motionController.X());
     lv_label_set_text_fmt(serY, "%03d", motionController.Y());
@@ -152,7 +157,15 @@ void MyApp::Refresh()
     lv_label_set_text_static(serY, "000");
     lv_label_set_text_static(serZ, "000");
   }
-  
+  if(startChartValue==1)
+  {
+    lv_chart_set_next(hrChart, hrSer, motionController.X());
+     lv_label_set_text_fmt(serX, "%03d", motionController.X());
+  }
+  else
+  {
+
+  }
 }
 
 void MyApp::OnStartStopEvent(lv_event_t event) 
@@ -163,7 +176,7 @@ void MyApp::OnStartStopEvent(lv_event_t event)
     {
       heartRateController.Start();
       //enable read write the motion sensor
-      startMotonSensor=1;
+      startMotionSensor=1;
       UpdateStartStopButton(heartRateController.State() != Controllers::HeartRateController::States::Stopped);
       systemTask.PushMessage(Pinetime::System::Messages::DisableSleeping);
       lv_obj_set_style_local_text_color(label_hr, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::highlight);
@@ -175,7 +188,7 @@ void MyApp::OnStartStopEvent(lv_event_t event)
     {
       heartRateController.Stop();
       //enable read write the motion sensor
-      startMotonSensor=0;
+      startMotionSensor=0;
       UpdateStartStopButton(heartRateController.State() != Controllers::HeartRateController::States::Stopped);
       systemTask.PushMessage(Pinetime::System::Messages::EnableSleeping);
       lv_obj_set_style_local_text_color(label_hr, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
@@ -188,9 +201,89 @@ void MyApp::OnStartStopEvent(lv_event_t event)
 
 void MyApp::OnHrChartEvent(lv_event_t event)
 {
+  //TODO find some way only allow to enter the event below ONCE from prevous page
+  //better if we hide the chart button when only enter chart mode
   if (event == LV_EVENT_CLICKED)
   {
+    startChartValue=1;
+    lv_obj_set_hidden(label_hrChart, FALSE);
+    //clear the whole objs
+    lv_obj_set_hidden(label_x, TRUE); 
+    lv_obj_set_hidden(label_y, TRUE); 
+    lv_obj_set_hidden(label_z, TRUE);
+    // lv_obj_set_hidden(serX, TRUE);
+    lv_obj_set_hidden(serY, TRUE); 
+    lv_obj_set_hidden(serZ, TRUE);
+    lv_obj_set_hidden(label_status, TRUE); 
+    lv_obj_set_hidden(label_bpm, TRUE); 
+    //hide 2 button whenever enter the chart view
+    lv_obj_set_hidden(label_hr, TRUE);
+    lv_obj_set_hidden(label_startStop, TRUE);
+    lv_obj_set_hidden(btn_startStop, TRUE);
+    lv_obj_set_hidden(btn_hrChart, TRUE);
+    lv_obj_set_hidden(label_hrChart, TRUE);
 
+
+    //display heart rate chart
+    //display the chart content
+    label_chartContent = lv_label_create(lv_scr_act(), nullptr);
+    lv_label_set_text_static(label_chartContent, "Chart View");
+    lv_obj_align(label_chartContent, nullptr, LV_ALIGN_IN_TOP_MID, 0, 0);
+
+    //init chart display
+    hrChart = lv_chart_create(lv_scr_act(), NULL);
+    lv_obj_set_size(hrChart, 200, 200);
+    lv_obj_align(hrChart, NULL, LV_ALIGN_IN_TOP_MID, 0, 0);
+    lv_chart_set_type(hrChart, LV_CHART_TYPE_LINE); /*Show lines and points too*/
+    lv_chart_set_range(hrChart, -1100, 1100);
+    lv_chart_set_update_mode(hrChart, LV_CHART_UPDATE_MODE_SHIFT);
+    lv_chart_set_point_count(hrChart, 10);
+    hrSer = lv_chart_add_series(hrChart, LV_COLOR_BLUE);
+    lv_chart_init_points(hrChart, hrSer, 0);
+    lv_chart_refresh(hrChart); /*Required after direct set*/
+
+    //display value while charting 
+    lv_obj_align(serX, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, -25);
+
+    //create turn back button
+    btn_back = lv_btn_create(lv_scr_act(), nullptr);
+    btn_back->user_data = this;
+    lv_obj_set_height(btn_back, 45);
+    lv_obj_set_width(btn_back, 60);
+    lv_obj_set_event_cb(btn_back, btnBackEventHandler);
+    lv_obj_align(btn_back, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
+    label_back = lv_label_create(btn_back, nullptr);
+    lv_label_set_text_static(label_back, Symbols::leftArrow);
+  }
+}
+
+void MyApp::OnBackEvent(lv_event_t event)
+{
+  if (event == LV_EVENT_CLICKED)
+  {
+    startChartValue=0;
+    //enable display previous page objects
+    lv_obj_set_hidden(label_x, FALSE); 
+    lv_obj_set_hidden(label_y, FALSE); 
+    lv_obj_set_hidden(label_z, FALSE);
+    lv_obj_set_hidden(serX, FALSE);
+    lv_obj_set_hidden(serY, FALSE); 
+    lv_obj_set_hidden(serZ, FALSE);
+    lv_obj_set_hidden(label_status, FALSE); 
+    lv_obj_set_hidden(label_bpm, FALSE); 
+    lv_obj_set_hidden(label_hr, FALSE);
+    lv_obj_set_hidden(label_startStop, FALSE);
+    lv_obj_set_hidden(btn_startStop, FALSE);
+    lv_obj_set_hidden(label_hrChart, FALSE);
+    lv_obj_set_hidden(btn_hrChart, FALSE);
+    
+    //hide chart objects
+    lv_obj_set_hidden(label_chartContent, TRUE);
+    lv_chart_hide_series(hrChart, hrSer, TRUE);
+    lv_obj_set_hidden(btn_back, TRUE);
+    lv_obj_set_hidden(label_back, TRUE);
+    //reset x value's location
+    lv_obj_align(serX, label_x, LV_ALIGN_IN_RIGHT_MID,25, 0);
   }
 }
 

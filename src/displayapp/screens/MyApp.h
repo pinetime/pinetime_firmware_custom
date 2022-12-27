@@ -32,6 +32,8 @@ namespace Pinetime
                     void OnStartStopEvent(lv_event_t event);
                     //handle whenever chart button pressed
                     void OnHrChartEvent(lv_event_t event);
+                    //handle in chart mode, back button
+                    void OnBackEvent(lv_event_t event);
 
                 private:
                     Controllers::HeartRateController& heartRateController;
@@ -47,8 +49,6 @@ namespace Pinetime
                     lv_obj_t* btn_startStop;
                     lv_obj_t* label_startStop;
                     lv_task_t* taskRefresh;
-                    lv_obj_t* btn_hrChart;
-                    lv_obj_t* label_hrChart;
                     
                     //MOTION LABELS
                     //X value
@@ -62,7 +62,17 @@ namespace Pinetime
                     lv_obj_t* label_y;
                     lv_obj_t* label_z;
 
-                    bool startMotonSensor=0;
+                    //CHART
+                    lv_obj_t* btn_hrChart;
+                    lv_obj_t* label_hrChart;
+                    lv_obj_t* hrChart;
+                    lv_chart_series_t* hrSer;
+                    lv_obj_t* btn_back;
+                    lv_obj_t* label_back;
+                    lv_obj_t* label_chartContent;
+
+                    bool startMotionSensor=0;
+                    bool startChartValue=0;
                     void UpdateStartStopButton(bool isRunning);
             };
         }
