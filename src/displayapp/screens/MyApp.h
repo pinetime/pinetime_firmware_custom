@@ -70,6 +70,7 @@ namespace Pinetime
                     lv_obj_t* btn_back;
                     lv_obj_t* label_back;
                     lv_obj_t* label_chartContent;
+                    lv_obj_t* label_chartLiveValue;
 
                     bool startMotionSensor=0;
                     bool startChartValue=0;

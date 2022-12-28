@@ -159,8 +159,9 @@ void MyApp::Refresh()
   }
   if(startChartValue==1)
   {
+    //TODO replace X value by heart rate
     lv_chart_set_next(hrChart, hrSer, motionController.X());
-     lv_label_set_text_fmt(serX, "%03d", motionController.X());
+    lv_label_set_text_fmt(label_chartLiveValue, "%03d", motionController.X());
   }
   else
   {
@@ -211,7 +212,7 @@ void MyApp::OnHrChartEvent(lv_event_t event)
     lv_obj_set_hidden(label_x, TRUE); 
     lv_obj_set_hidden(label_y, TRUE); 
     lv_obj_set_hidden(label_z, TRUE);
-    // lv_obj_set_hidden(serX, TRUE);
+    lv_obj_set_hidden(serX, TRUE);
     lv_obj_set_hidden(serY, TRUE); 
     lv_obj_set_hidden(serZ, TRUE);
     lv_obj_set_hidden(label_status, TRUE); 
@@ -243,7 +244,10 @@ void MyApp::OnHrChartEvent(lv_event_t event)
     lv_chart_refresh(hrChart); /*Required after direct set*/
 
     //display value while charting 
-    lv_obj_align(serX, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, -25);
+    label_chartLiveValue = lv_label_create(lv_scr_act(), nullptr);
+    lv_label_set_text_static(label_chartLiveValue, "000");
+    lv_obj_align(label_chartLiveValue, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, -25);
+    
 
     //create turn back button
     btn_back = lv_btn_create(lv_scr_act(), nullptr);
@@ -282,8 +286,7 @@ void MyApp::OnBackEvent(lv_event_t event)
     lv_chart_hide_series(hrChart, hrSer, TRUE);
     lv_obj_set_hidden(btn_back, TRUE);
     lv_obj_set_hidden(label_back, TRUE);
-    //reset x value's location
-    lv_obj_align(serX, label_x, LV_ALIGN_IN_RIGHT_MID,25, 0);
+    lv_obj_set_hidden(label_chartLiveValue, TRUE);
   }
 }
 
