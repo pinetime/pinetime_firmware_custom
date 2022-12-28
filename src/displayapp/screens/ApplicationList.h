@@ -44,7 +44,7 @@ namespace Pinetime {
           {Symbols::hourGlass, Apps::Timer},
           {Symbols::shoe, Apps::Steps},
           {Symbols::heartBeat, Apps::HeartRate},
-          {Symbols::myCustom, Apps::MyAppsCustom},
+          {Symbols::skull, Apps::MyAppsCustom},
           // {Symbols::music, Apps::Music},
 
           // {Symbols::paintbrush, Apps::Paint},

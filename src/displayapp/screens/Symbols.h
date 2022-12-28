@@ -38,8 +38,11 @@ namespace Pinetime {
         static constexpr const char* eye = "\xEF\x81\xAE";
         static constexpr const char* home = "\xEF\x80\x95";
         static constexpr const char* sleep = "\xEE\xBD\x84";
-        static constexpr const char* myCustom = "\xEF\x95\x8C";
+        static constexpr const char* skull = "\xEF\x95\x8C";
         static constexpr const char* leftArrow = "\xEF\x81\xA0";
+        static constexpr const char* logoWindows = "\xEF\x85\xBA";
+        static constexpr const char* gamePad = "\xEF\x84\x9B";
+        static constexpr const char* calculator = "\xEF\x87\xAC";
 
         // lv_font_sys_48.c
         static constexpr const char* settings = "\xEE\xA2\xB8";
