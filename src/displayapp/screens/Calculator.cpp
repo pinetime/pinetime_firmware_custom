@@ -24,6 +24,35 @@ systemTask{systemTask}
   taskRefresh = lv_task_create(RefreshTaskCallback, 100, LV_TASK_PRIO_MID, this);
   //create the bounder
   _createBounder();
+  //create x var
+  label_x = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_static(label_x, "0"); 
+  lv_obj_align(label_x, nullptr, LV_ALIGN_IN_TOP_RIGHT,-5, 9);
+  lv_obj_set_style_local_text_color(label_x, 
+                              LV_LABEL_PART_MAIN, 
+                              LV_STATE_DEFAULT, 
+                              LV_COLOR_ORANGE);
+  //create y var
+  label_y = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_static(label_y, "0"); 
+  lv_obj_align(label_y, nullptr, LV_ALIGN_IN_TOP_RIGHT,-5, 9);
+  lv_obj_set_style_local_text_color(label_y, 
+                              LV_LABEL_PART_MAIN, 
+                              LV_STATE_DEFAULT, 
+                              LV_COLOR_ORANGE);
+  lv_obj_set_hidden(label_y, TRUE);
+  //create varSum
+  label_sum = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(label_sum, 
+                          LV_LABEL_PART_MAIN, 
+                          LV_STATE_DEFAULT, 
+                          LV_COLOR_GREEN);
+  lv_obj_set_hidden(label_sum, TRUE);
+  //init currentMathSymbol
+  ptr.currentMathSymbol  = ptr.math_none;
+  //create math symnol
+  label_mathSymbol = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_hidden(label_mathSymbol, TRUE);
 
   //TODO bring all num and label into a array to created once
   //TODO separate lv_obj_align from obj creation
@@ -172,6 +201,7 @@ systemTask{systemTask}
   lv_obj_align(ptr.numDivide, ptr.numDel, LV_ALIGN_IN_TOP_LEFT, 60, 0);
   ptr.label_Divide = lv_label_create(ptr.numDivide, nullptr);
   lv_label_set_text_static(ptr.label_Divide,Symbols::divide);
+
 }
 
 Calculator::~Calculator() 
@@ -184,84 +214,249 @@ Calculator::~Calculator()
 void Calculator::Refresh()
 {
   //class values continously updating 
+  // lv_label_set_text_fmt(label_x, "%03d", varX);
+  // lv_obj_align(label_x, nullptr, LV_ALIGN_IN_TOP_RIGHT,-5, 8);
 }
 
 void Calculator::OnNumEvent(lv_obj_t* obj, lv_event_t event)
 {
-  if (event == LV_EVENT_CLICKED)
+  //normally type into var X
+  if ((event == LV_EVENT_CLICKED) && (ptr.currentMathSymbol == ptr.math_none))
   {
     if(obj == ptr.num7)
     {
-      //test
-      // lv_obj_set_style_local_text_color(ptr.label_3, 
-      //                         LV_LABEL_PART_MAIN, 
-      //                         LV_STATE_DEFAULT, 
-      //                         LV_COLOR_RED);
+      varX = (varX*10) + ptr.val_num7;
     }
-    if(obj == ptr.num8)
+    else if(obj == ptr.num8)
     {
-      // lv_obj_set_style_local_text_color(ptr.label_3, 
-      //                         LV_LABEL_PART_MAIN, 
-      //                         LV_STATE_DEFAULT, 
-      //                         LV_COLOR_WHITE);
+      varX = (varX*10) + ptr.val_num8;
     }
-    if(obj == ptr.num9)
+    else if(obj == ptr.num9)
     {
-     
+     varX = (varX*10) + ptr.val_num9;
     }
-    if(obj == ptr.numPlus)
+    else if(obj == ptr.numPlus)
     {
-      return;
+      ptr.currentMathSymbol  = ptr.math_add;
     }
-    if(obj == ptr.num4)
+    else if(obj == ptr.num4)
     {
-      return;
+      varX = (varX*10) + ptr.val_num4;
     }
-    if(obj == ptr.num5)
+    else if(obj == ptr.num5)
     {
-      return;
+      varX = (varX*10) + ptr.val_num5;
     }
-    if(obj == ptr.num6)
+    else if(obj == ptr.num6)
     {
-      return;
+      varX = (varX*10) + ptr.val_num6;
     }
-    if(obj == ptr.numMinus)
+    else if(obj == ptr.numMinus)
     {
-      return;
+      ptr.currentMathSymbol  = ptr.math_minus;
     }
-    if(obj == ptr.num1)
+    else if(obj == ptr.num1)
     {
+       varX = (varX*10) + ptr.val_num1;
+    }
+    else if(obj == ptr.num2)
+    {
+       varX = (varX*10) + ptr.val_num2;
+    }
+    else if(obj == ptr.num3)
+    {
+       varX = (varX*10) + ptr.val_num3;
+    }
+    else if(obj == ptr.numMultiply)
+    {
+      ptr.currentMathSymbol  = ptr.math_multiply;
+    }
+    else if(obj == ptr.num0)
+    {
+       varX = (varX*10) + ptr.val_num0;
+    }
+    else if(obj == ptr.numDel)
+    {
+       varX = varX/10;
+    }
+    else if(obj == ptr.numDivide)
+    {
+      ptr.currentMathSymbol  = ptr.math_divide;
+    }
+    //TODO prevent overflow
 
-    }
-    if(obj == ptr.num2)
+    updateDisplayX();
+  }
+  //check math symbols state
+  if ((ptr.currentMathSymbol != ptr.math_none))
+  {
+    switch (ptr.currentMathSymbol)
     {
-
+    case ptr.math_add:
+      lv_label_set_text_static(label_mathSymbol, Symbols::plus); 
+      break;
+    case ptr.math_minus:
+      lv_label_set_text_static(label_mathSymbol, Symbols::minus); 
+      break;
+    case ptr.math_multiply:
+      lv_label_set_text_static(label_mathSymbol, Symbols::multiply); 
+      break;
+    case ptr.math_divide:
+      lv_label_set_text_static(label_mathSymbol, Symbols::divide); 
+    break;
     }
-    if(obj == ptr.num3)
+    //shift the varX display
+    updateDisplayX();
+    lv_obj_set_hidden(label_mathSymbol, FALSE);
+    if(_isTypeY==1)
     {
-
+      lv_obj_align(label_mathSymbol, label_y, LV_ALIGN_IN_TOP_LEFT, -20, 0);
+      updateDisplayX();
     }
-    if(obj == ptr.numMultiply)
+    else
     {
-
-    }
-    if(obj == ptr.numEqual)
-    {
-
-    }
-    if(obj == ptr.num0)
-    {
-
-    }
-    if(obj == ptr.numDel)
-    {
-
-    }
-    if(obj == ptr.numDivide)
-    {
-
+      lv_obj_align(label_mathSymbol, nullptr, LV_ALIGN_IN_TOP_RIGHT,-5, 9);
     }
   }
+  //update math symbol label
+  
+  //normally type into var Y
+  if ((event == LV_EVENT_CLICKED) && (ptr.currentMathSymbol != ptr.math_none))
+  {
+    _isTypeY=1;
+    lv_obj_set_hidden(label_y, FALSE);
+    if(obj == ptr.num7)
+    {
+      varY = (varY*10) + ptr.val_num7;
+    }
+    else if(obj == ptr.num8)
+    {
+      varY = (varY*10) + ptr.val_num8;
+    }
+    else if(obj == ptr.num9)
+    {
+     varY = (varY*10) + ptr.val_num9;
+    }
+    else if(obj == ptr.num4)
+    {
+      varY = (varY*10) + ptr.val_num4;
+    }
+    else if(obj == ptr.num5)
+    {
+      varY = (varY*10) + ptr.val_num5;
+    }
+    else if(obj == ptr.num6)
+    {
+      varY = (varY*10) + ptr.val_num6;
+    }
+    else if(obj == ptr.num1)
+    {
+       varY = (varY*10) + ptr.val_num1;
+    }
+    else if(obj == ptr.num2)
+    {
+       varY = (varY*10) + ptr.val_num2;
+    }
+    else if(obj == ptr.num3)
+    {
+       varY = (varY*10) + ptr.val_num3;
+    }
+    else if(obj == ptr.num0)
+    {
+       varY = (varY*10) + ptr.val_num0;
+    }
+    else if(obj == ptr.numDel)
+    {
+       varY = varY/10;
+    }
+    //TODO prevent overflow
+    updateDisplayY();
+    updateDisplayX();
+  }
+
+  //long delete button pressing to reset alls
+  if(event == LV_EVENT_LONG_PRESSED)
+  {
+    if(obj == ptr.numDel)
+    {
+      varX=varY=0;
+      _isTypeY=0;
+      ptr.currentMathSymbol = ptr.math_none;
+      lv_obj_set_hidden(label_mathSymbol, TRUE);
+      updateDisplayX();
+    }
+  }
+  //handle spaceback btn after press math symbols
+  if((event == LV_EVENT_CLICKED) && ptr.currentMathSymbol != ptr.math_none && _isTypeY==0)
+  {
+    if(obj == ptr.numDel)
+    {
+      ptr.currentMathSymbol = ptr.math_none;
+      lv_obj_set_hidden(label_mathSymbol, TRUE);
+      updateDisplayX();
+    }
+  }
+  //handle equal buuton pressed
+  if((event == LV_EVENT_CLICKED) && ptr.currentMathSymbol != ptr.math_none && _isTypeY==1)
+  {
+    if(obj == ptr.numEqual)
+    {
+      switch (ptr.currentMathSymbol)
+      {
+        case ptr.math_add:
+          varSum = varX+varY; 
+          break;
+        case ptr.math_minus:
+          varSum = varX-varY; 
+          break;
+        case ptr.math_multiply:
+          varSum = varX*varY; 
+          break;
+        case ptr.math_divide:
+          varSum = varX/varY; 
+        break;
+      }
+
+      lv_label_set_text_fmt(label_sum, "%01d", varSum);
+      lv_obj_set_hidden(label_x, TRUE);
+      lv_obj_set_hidden(label_y, TRUE);
+      lv_obj_set_hidden(label_mathSymbol, TRUE);
+      lv_obj_set_hidden(label_sum, FALSE);
+      ptr.currentMathSymbol = ptr.math_none;
+      varX=varY=0;
+      lv_obj_align(label_sum, nullptr, LV_ALIGN_IN_TOP_RIGHT,-5, 9);
+    }
+  }
+
+}
+
+void Calculator::updateDisplayX(void)
+{
+  if((ptr.currentMathSymbol != ptr.math_none) || (_isTypeY == 1))
+  {
+    lv_obj_align(label_x, label_mathSymbol, LV_ALIGN_IN_TOP_RIGHT,-20, 0);
+  }
+  else
+  {
+    lv_label_set_text_fmt(label_x, "%01d", varX);
+    lv_obj_align(label_x, nullptr, LV_ALIGN_IN_TOP_RIGHT,-5, 9);
+    if(varX==0)
+    {
+      _isTypeY=0;
+    }
+  }
+}
+
+void Calculator::updateDisplayY(void)
+{
+  lv_label_set_text_fmt(label_y, "%01d", varY);
+  lv_obj_align(label_y, nullptr, LV_ALIGN_IN_TOP_RIGHT,-5, 9);
+  if(varY==0)
+  {
+    _isTypeY=0;
+    lv_obj_set_hidden(label_y, TRUE);
+  }
+  updateDisplayX();
 }
 
 void Calculator::_createBounder(void)
