@@ -93,6 +93,8 @@ systemTask{systemTask}
   lv_obj_align(ptr.numPlus, ptr.num9, LV_ALIGN_IN_TOP_LEFT, 60, 0);
   ptr.label_Plus = lv_label_create(ptr.numPlus, nullptr);
   lv_label_set_text_static(ptr.label_Plus, Symbols::plus);
+  lv_obj_set_style_local_bg_color(ptr.numPlus, LV_BTN_PART_MAIN, 
+                                  LV_STATE_DEFAULT, LV_COLOR_ORANGE);
   // btn 4
   ptr.num4 = lv_btn_create(lv_scr_act(), nullptr);
   ptr.num4->user_data = this;
@@ -129,6 +131,8 @@ systemTask{systemTask}
   lv_obj_align(ptr.numMinus, ptr.num6, LV_ALIGN_IN_TOP_LEFT, 60, 0);
   ptr.label_Minus = lv_label_create(ptr.numMinus, nullptr);
   lv_label_set_text_static(ptr.label_Minus, Symbols::minus);
+  lv_obj_set_style_local_bg_color(ptr.numMinus, LV_BTN_PART_MAIN, 
+                                  LV_STATE_DEFAULT, LV_COLOR_ORANGE);
   // btn 1
   ptr.num1 = lv_btn_create(lv_scr_act(), nullptr);
   ptr.num1->user_data = this;
@@ -165,6 +169,8 @@ systemTask{systemTask}
   lv_obj_align(ptr.numMultiply, ptr.num3, LV_ALIGN_IN_TOP_LEFT, 60, 0);
   ptr.label_Multiply = lv_label_create(ptr.numMultiply, nullptr);
   lv_label_set_text_static(ptr.label_Multiply, Symbols::multiply);
+  lv_obj_set_style_local_bg_color(ptr.numMultiply, LV_BTN_PART_MAIN, 
+                                  LV_STATE_DEFAULT, LV_COLOR_ORANGE);
   //btn equal
   ptr.numEqual = lv_btn_create(lv_scr_act(), nullptr);
   ptr.numEqual->user_data = this;
@@ -174,6 +180,8 @@ systemTask{systemTask}
   lv_obj_align(ptr.numEqual, ptr.num1, LV_ALIGN_IN_TOP_LEFT, 0, 50);
   ptr.label_Equal = lv_label_create(ptr.numEqual, nullptr);
   lv_label_set_text_static(ptr.label_Equal, Symbols::equal);
+  lv_obj_set_style_local_bg_color(ptr.numEqual, LV_BTN_PART_MAIN, 
+                                  LV_STATE_DEFAULT, LV_COLOR_TEAL);
   //btn 0
   ptr.num0 = lv_btn_create(lv_scr_act(), nullptr);
   ptr.num0->user_data = this;
@@ -192,6 +200,8 @@ systemTask{systemTask}
   lv_obj_align(ptr.numDel, ptr.num0, LV_ALIGN_IN_TOP_LEFT, 60, 0);
   ptr.label_Del = lv_label_create(ptr.numDel, nullptr);
   lv_label_set_text_static(ptr.label_Del,Symbols::backpsace);
+  lv_obj_set_style_local_bg_color(ptr.numDel, LV_BTN_PART_MAIN, 
+                                  LV_STATE_DEFAULT, LV_COLOR_RED);
   //btn divide
   ptr.numDivide = lv_btn_create(lv_scr_act(), nullptr);
   ptr.numDivide->user_data = this;
@@ -201,7 +211,8 @@ systemTask{systemTask}
   lv_obj_align(ptr.numDivide, ptr.numDel, LV_ALIGN_IN_TOP_LEFT, 60, 0);
   ptr.label_Divide = lv_label_create(ptr.numDivide, nullptr);
   lv_label_set_text_static(ptr.label_Divide,Symbols::divide);
-
+  lv_obj_set_style_local_bg_color(ptr.numDivide, LV_BTN_PART_MAIN, 
+                                  LV_STATE_DEFAULT, LV_COLOR_ORANGE);
 }
 
 Calculator::~Calculator() 
@@ -225,15 +236,15 @@ void Calculator::OnNumEvent(lv_obj_t* obj, lv_event_t event)
   {
     if(obj == ptr.num7)
     {
-      varX = _minusPrefix*((varX*10) + ptr.val_num7);
+      varX = _minusPrefix*((abs(varX)*10) + ptr.val_num7);
     }
     else if(obj == ptr.num8)
     {
-      varX = _minusPrefix*((varX*10) + ptr.val_num8);
+      varX = _minusPrefix*((abs(varX)*10) + ptr.val_num8);
     }
     else if(obj == ptr.num9)
     {
-     varX = _minusPrefix*((varX*10) + ptr.val_num9);
+     varX = _minusPrefix*((abs(varX)*10) + ptr.val_num9);
     }
     else if(obj == ptr.numPlus)
     {
@@ -254,15 +265,15 @@ void Calculator::OnNumEvent(lv_obj_t* obj, lv_event_t event)
     }
     else if(obj == ptr.num4)
     {
-      varX = _minusPrefix*((varX*10) + ptr.val_num4);
+      varX = _minusPrefix*((abs(varX)*10) + ptr.val_num4);
     }
     else if(obj == ptr.num5)
     {
-      varX = _minusPrefix*((varX*10) + ptr.val_num5);
+      varX = _minusPrefix*((abs(varX)*10) + ptr.val_num5);
     }
     else if(obj == ptr.num6)
     {
-      varX = _minusPrefix*((varX*10) + ptr.val_num6);
+      varX = _minusPrefix*((abs(varX)*10) + ptr.val_num6);
     }
     else if(obj == ptr.numMinus)
     {
@@ -295,15 +306,15 @@ void Calculator::OnNumEvent(lv_obj_t* obj, lv_event_t event)
     }
     else if(obj == ptr.num1)
     {
-       varX = _minusPrefix*((varX*10) + ptr.val_num1);
+       varX = _minusPrefix*((abs(varX)*10) + ptr.val_num1);
     }
     else if(obj == ptr.num2)
     {
-       varX = _minusPrefix*((varX*10) + ptr.val_num2);
+       varX = _minusPrefix*((abs(varX)*10) + ptr.val_num2);
     }
     else if(obj == ptr.num3)
     {
-       varX = _minusPrefix*((varX*10) + ptr.val_num3);
+       varX = _minusPrefix*((abs(varX)*10) + ptr.val_num3);
     }
     else if(obj == ptr.numMultiply)
     {
@@ -324,7 +335,7 @@ void Calculator::OnNumEvent(lv_obj_t* obj, lv_event_t event)
     }
     else if(obj == ptr.num0)
     {
-       varX = (varX*10) + ptr.val_num0;
+       varX = (abs(varX)*10) + ptr.val_num0;
     }
     else if(obj == ptr.numDel)
     {
@@ -451,6 +462,7 @@ void Calculator::OnNumEvent(lv_obj_t* obj, lv_event_t event)
       lv_obj_set_hidden(label_y, TRUE);
       lv_obj_set_hidden(label_sum, TRUE);
       lv_obj_set_hidden(label_x, FALSE);
+      _minusPrefix = 1;
       updateDisplayY();
     }
   }
@@ -476,6 +488,7 @@ void Calculator::OnNumEvent(lv_obj_t* obj, lv_event_t event)
       lv_obj_set_hidden(label_y, TRUE);
       lv_obj_set_hidden(label_sum, TRUE);
       lv_obj_set_hidden(label_x, FALSE);
+      _minusPrefix = 1;
       updateDisplayY();
     }
   }
