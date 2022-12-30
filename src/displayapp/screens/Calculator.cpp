@@ -518,7 +518,7 @@ void Calculator::OnNumEvent(lv_obj_t* obj, lv_event_t event)
           break; 
       } 
 
-      lv_label_set_text_fmt(label_sum, "%01d", varSum);
+      lv_label_set_text_fmt(label_sum, "%.2f", varSum);
       lv_obj_set_hidden(label_x, TRUE);
       lv_obj_set_hidden(label_y, TRUE);
       lv_obj_set_hidden(label_mathSymbol, TRUE);

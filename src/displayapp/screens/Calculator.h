@@ -35,7 +35,7 @@ namespace Pinetime
                 lv_obj_t *label_sum;
                 int32_t varX=0;
                 int32_t varY=0;
-                int32_t varSum=0;
+                float_t varSum=0;
                 lv_obj_t *label_mathSymbol;
                 
                 //keypad btn
@@ -80,6 +80,8 @@ namespace Pinetime
 }
 
 /**
+ * 
+ *  MY CALCULATOR
  *  ____________________
  * |                    |
  * |____________________|
