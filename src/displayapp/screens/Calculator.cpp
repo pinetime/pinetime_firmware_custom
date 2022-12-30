@@ -238,6 +238,19 @@ void Calculator::OnNumEvent(lv_obj_t* obj, lv_event_t event)
     else if(obj == ptr.numPlus)
     {
       ptr.currentMathSymbol  = ptr.math_add;
+      if(_isGetSumValue == 1)
+      {
+        varX=varSum;
+        updateDisplayX();
+        varY=0; varSum=0;
+        _isTypeY=0;
+        _isGetSumValue=0;
+        lv_obj_set_hidden(label_mathSymbol, TRUE);
+        lv_obj_set_hidden(label_y, TRUE);
+        lv_obj_set_hidden(label_sum, TRUE);
+        lv_obj_set_hidden(label_x, FALSE);
+        updateDisplayY();
+      }
     }
     else if(obj == ptr.num4)
     {
@@ -254,6 +267,19 @@ void Calculator::OnNumEvent(lv_obj_t* obj, lv_event_t event)
     else if(obj == ptr.numMinus)
     {
       ptr.currentMathSymbol  = ptr.math_minus;
+      if(_isGetSumValue == 1)
+      {
+        varX=varSum;
+        updateDisplayX();
+        varY=0; varSum=0;
+        _isTypeY=0;
+        _isGetSumValue=0;
+        lv_obj_set_hidden(label_mathSymbol, TRUE);
+        lv_obj_set_hidden(label_y, TRUE);
+        lv_obj_set_hidden(label_sum, TRUE);
+        lv_obj_set_hidden(label_x, FALSE);
+        updateDisplayY();
+      }
     }
     else if(obj == ptr.num1)
     {
@@ -270,6 +296,19 @@ void Calculator::OnNumEvent(lv_obj_t* obj, lv_event_t event)
     else if(obj == ptr.numMultiply)
     {
       ptr.currentMathSymbol  = ptr.math_multiply;
+      if(_isGetSumValue == 1)
+      {
+        varX=varSum;
+        updateDisplayX();
+        varY=0; varSum=0;
+        _isTypeY=0;
+        _isGetSumValue=0;
+        lv_obj_set_hidden(label_mathSymbol, TRUE);
+        lv_obj_set_hidden(label_y, TRUE);
+        lv_obj_set_hidden(label_sum, TRUE);
+        lv_obj_set_hidden(label_x, FALSE);
+        updateDisplayY();
+      }
     }
     else if(obj == ptr.num0)
     {
@@ -282,6 +321,19 @@ void Calculator::OnNumEvent(lv_obj_t* obj, lv_event_t event)
     else if(obj == ptr.numDivide)
     {
       ptr.currentMathSymbol  = ptr.math_divide;
+      if(_isGetSumValue == 1)
+      {
+        varX=varSum;
+        updateDisplayX();
+        varY=0; varSum=0;
+        _isTypeY=0;
+        _isGetSumValue=0;
+        lv_obj_set_hidden(label_mathSymbol, TRUE);
+        lv_obj_set_hidden(label_y, TRUE);
+        lv_obj_set_hidden(label_sum, TRUE);
+        lv_obj_set_hidden(label_x, FALSE);
+        updateDisplayY();
+      }
     }
     //TODO prevent overflow
 
@@ -379,15 +431,19 @@ void Calculator::OnNumEvent(lv_obj_t* obj, lv_event_t event)
   {
     if(obj == ptr.numDel)
     {
-      varX=varY=0;
+      varX=varY=varSum=0;
       _isTypeY=0;
+      _isGetSumValue=0;
       ptr.currentMathSymbol = ptr.math_none;
       lv_obj_set_hidden(label_mathSymbol, TRUE);
-      updateDisplayX();
+      lv_obj_set_hidden(label_y, TRUE);
+      lv_obj_set_hidden(label_sum, TRUE);
+      lv_obj_set_hidden(label_x, FALSE);
+      updateDisplayY();
     }
   }
   //handle spaceback btn after press math symbols
-  if((event == LV_EVENT_CLICKED) && ptr.currentMathSymbol != ptr.math_none && _isTypeY==0)
+  if((event == LV_EVENT_CLICKED) && (ptr.currentMathSymbol != ptr.math_none) && (_isTypeY==0))
   {
     if(obj == ptr.numDel)
     {
@@ -396,8 +452,25 @@ void Calculator::OnNumEvent(lv_obj_t* obj, lv_event_t event)
       updateDisplayX();
     }
   }
+  else if ((event == LV_EVENT_CLICKED) && (_isGetSumValue==1))
+  {
+    if(obj == ptr.numDel)
+    {
+      varX=varY=varSum=0;
+      _isTypeY=0;
+      _isGetSumValue=0;
+      ptr.currentMathSymbol = ptr.math_none;
+      lv_obj_set_hidden(label_mathSymbol, TRUE);
+      lv_obj_set_hidden(label_y, TRUE);
+      lv_obj_set_hidden(label_sum, TRUE);
+      lv_obj_set_hidden(label_x, FALSE);
+      updateDisplayY();
+    }
+  }
+  
   //handle equal buuton pressed
-  if((event == LV_EVENT_CLICKED) && ptr.currentMathSymbol != ptr.math_none && _isTypeY==1)
+  if((event == LV_EVENT_CLICKED) && (ptr.currentMathSymbol != ptr.math_none) 
+  && (_isTypeY==1) && (_isGetSumValue==0))
   {
     if(obj == ptr.numEqual)
     {
@@ -415,7 +488,10 @@ void Calculator::OnNumEvent(lv_obj_t* obj, lv_event_t event)
         case ptr.math_divide:
           varSum = varX/varY; 
         break;
-      }
+        default:
+        varSum = varX+varY;
+          break; 
+      } 
 
       lv_label_set_text_fmt(label_sum, "%01d", varSum);
       lv_obj_set_hidden(label_x, TRUE);
@@ -423,7 +499,10 @@ void Calculator::OnNumEvent(lv_obj_t* obj, lv_event_t event)
       lv_obj_set_hidden(label_mathSymbol, TRUE);
       lv_obj_set_hidden(label_sum, FALSE);
       ptr.currentMathSymbol = ptr.math_none;
+      //reste x y value
       varX=varY=0;
+      //to know reach last step
+      _isGetSumValue=1;
       lv_obj_align(label_sum, nullptr, LV_ALIGN_IN_TOP_RIGHT,-5, 9);
     }
   }
@@ -435,6 +514,7 @@ void Calculator::updateDisplayX(void)
   if((ptr.currentMathSymbol != ptr.math_none) || (_isTypeY == 1))
   {
     lv_obj_align(label_x, label_mathSymbol, LV_ALIGN_IN_TOP_RIGHT,-20, 0);
+    lv_label_set_text_fmt(label_x, "%01d", varX);
   }
   else
   {
