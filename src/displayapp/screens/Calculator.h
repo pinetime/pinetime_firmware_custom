@@ -72,6 +72,7 @@ namespace Pinetime
                 label ptr;
                 bool _isTypeY=0;
                 bool _isGetSumValue=0;
+                int8_t _minusPrefix=1;
                 void _createBounder(void);
             };
         }

@@ -225,15 +225,15 @@ void Calculator::OnNumEvent(lv_obj_t* obj, lv_event_t event)
   {
     if(obj == ptr.num7)
     {
-      varX = (varX*10) + ptr.val_num7;
+      varX = _minusPrefix*((varX*10) + ptr.val_num7);
     }
     else if(obj == ptr.num8)
     {
-      varX = (varX*10) + ptr.val_num8;
+      varX = _minusPrefix*((varX*10) + ptr.val_num8);
     }
     else if(obj == ptr.num9)
     {
-     varX = (varX*10) + ptr.val_num9;
+     varX = _minusPrefix*((varX*10) + ptr.val_num9);
     }
     else if(obj == ptr.numPlus)
     {
@@ -254,15 +254,15 @@ void Calculator::OnNumEvent(lv_obj_t* obj, lv_event_t event)
     }
     else if(obj == ptr.num4)
     {
-      varX = (varX*10) + ptr.val_num4;
+      varX = _minusPrefix*((varX*10) + ptr.val_num4);
     }
     else if(obj == ptr.num5)
     {
-      varX = (varX*10) + ptr.val_num5;
+      varX = _minusPrefix*((varX*10) + ptr.val_num5);
     }
     else if(obj == ptr.num6)
     {
-      varX = (varX*10) + ptr.val_num6;
+      varX = _minusPrefix*((varX*10) + ptr.val_num6);
     }
     else if(obj == ptr.numMinus)
     {
@@ -280,18 +280,30 @@ void Calculator::OnNumEvent(lv_obj_t* obj, lv_event_t event)
         lv_obj_set_hidden(label_x, FALSE);
         updateDisplayY();
       }
+      else
+      {
+        if(varX==0x00)
+        {
+          _minusPrefix =-1;
+          ptr.currentMathSymbol  = ptr.math_none;
+        } 
+        else
+        {
+          _minusPrefix = 1;
+        }
+      }
     }
     else if(obj == ptr.num1)
     {
-       varX = (varX*10) + ptr.val_num1;
+       varX = _minusPrefix*((varX*10) + ptr.val_num1);
     }
     else if(obj == ptr.num2)
     {
-       varX = (varX*10) + ptr.val_num2;
+       varX = _minusPrefix*((varX*10) + ptr.val_num2);
     }
     else if(obj == ptr.num3)
     {
-       varX = (varX*10) + ptr.val_num3;
+       varX = _minusPrefix*((varX*10) + ptr.val_num3);
     }
     else if(obj == ptr.numMultiply)
     {
