@@ -511,14 +511,32 @@ void Calculator::OnNumEvent(lv_obj_t* obj, lv_event_t event)
           varSum = varX*varY; 
           break;
         case ptr.math_divide:
-          varSum = varX/varY; 
-        break;
+          if((varX%varY)==0)
+          {
+            _isFloatingPoint=0;
+          }
+          else
+          {
+            _isFloatingPoint=1;
+            
+          }
+          varSum = float_t(float_t(varX)/float_t(varY)); 
+          break;
         default:
-        varSum = varX+varY;
+          varSum = 0;
           break; 
-      } 
-
-      lv_label_set_text_fmt(label_sum, "%.2f", varSum);
+      }
+      //handle either varSum is a floating point or not 
+      if(_isFloatingPoint==1)                                                                                                                                                                                                                                                
+      {
+        lv_label_set_text_fmt(label_sum, "%.2f", varSum); 
+      }
+      else
+      {
+        varSumInt = varSum;
+        lv_label_set_text_fmt(label_sum, "%01d", varSumInt);
+      }
+      _isFloatingPoint=0;
       lv_obj_set_hidden(label_x, TRUE);
       lv_obj_set_hidden(label_y, TRUE);
       lv_obj_set_hidden(label_mathSymbol, TRUE);

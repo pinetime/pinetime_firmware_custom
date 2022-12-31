@@ -36,6 +36,7 @@ namespace Pinetime
                 int32_t varX=0;
                 int32_t varY=0;
                 float_t varSum=0;
+                int32_t varSumInt=0;
                 lv_obj_t *label_mathSymbol;
                 
                 //keypad btn
@@ -72,6 +73,7 @@ namespace Pinetime
                 label ptr;
                 bool _isTypeY=0;
                 bool _isGetSumValue=0;
+                bool _isFloatingPoint=0;
                 int8_t _minusPrefix=1;
                 void _createBounder(void);
             };
