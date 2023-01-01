@@ -391,6 +391,7 @@ void Calculator::OnNumEvent(lv_obj_t* obj, lv_event_t event)
     else
     {
       lv_obj_align(label_mathSymbol, nullptr, LV_ALIGN_IN_TOP_RIGHT,-5, 9);
+      updateDisplayX();
     }
   }
   //update math symbol label
@@ -440,10 +441,6 @@ void Calculator::OnNumEvent(lv_obj_t* obj, lv_event_t event)
     {
        varY = (varY*10) + ptr.val_num0;
     }
-    else if(obj == ptr.numDel)
-    {
-       varY = varY/10;
-    }
     //TODO prevent overflow
     updateDisplayY();
     updateDisplayX();
@@ -467,13 +464,20 @@ void Calculator::OnNumEvent(lv_obj_t* obj, lv_event_t event)
     }
   }
   //handle spaceback btn after press math symbols
-  if((event == LV_EVENT_CLICKED) && (ptr.currentMathSymbol != ptr.math_none) && (_isTypeY==0))
+  if((event == LV_EVENT_CLICKED) && (ptr.currentMathSymbol != ptr.math_none))
   {
     if(obj == ptr.numDel)
     {
-      ptr.currentMathSymbol = ptr.math_none;
-      lv_obj_set_hidden(label_mathSymbol, TRUE);
-      updateDisplayX();
+      if(varY==0)
+      {
+        ptr.currentMathSymbol = ptr.math_none;
+        lv_obj_set_hidden(label_mathSymbol, TRUE);
+      }
+      else
+      {
+        varY = varY/10;
+      }
+      updateDisplayY();
     }
   }
   else if ((event == LV_EVENT_CLICKED) && (_isGetSumValue==1))
