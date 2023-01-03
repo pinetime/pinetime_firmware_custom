@@ -53,6 +53,15 @@ systemTask{systemTask}
   //create math symnol
   label_mathSymbol = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_hidden(label_mathSymbol, TRUE);
+  //create error notification
+  label_error_overflow = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(label_error_overflow, 
+                          LV_LABEL_PART_MAIN, 
+                          LV_STATE_DEFAULT, 
+                          LV_COLOR_RED);
+  lv_label_set_text_static(label_error_overflow, "Overflow in32_t"); 
+  lv_obj_align(label_error_overflow, nullptr, LV_ALIGN_IN_TOP_LEFT, 10, 10);
+  lv_obj_set_hidden(label_error_overflow, TRUE);
 
   //TODO bring all num and label into a array to created once
   //TODO separate lv_obj_align from obj creation
@@ -236,14 +245,17 @@ void Calculator::OnNumEvent(lv_obj_t* obj, lv_event_t event)
   {
     if(obj == ptr.num7)
     {
+      _checkOverflow(varX, ptr.val_num7);
       varX = _minusPrefix*((abs(varX)*10) + ptr.val_num7);
     }
     else if(obj == ptr.num8)
     {
+      _checkOverflow(varX, ptr.val_num8);
       varX = _minusPrefix*((abs(varX)*10) + ptr.val_num8);
     }
     else if(obj == ptr.num9)
     {
+      _checkOverflow(varX, ptr.val_num9);
      varX = _minusPrefix*((abs(varX)*10) + ptr.val_num9);
     }
     else if(obj == ptr.numPlus)
@@ -265,14 +277,17 @@ void Calculator::OnNumEvent(lv_obj_t* obj, lv_event_t event)
     }
     else if(obj == ptr.num4)
     {
+      _checkOverflow(varX, ptr.val_num4);
       varX = _minusPrefix*((abs(varX)*10) + ptr.val_num4);
     }
     else if(obj == ptr.num5)
     {
+      _checkOverflow(varX, ptr.val_num5);
       varX = _minusPrefix*((abs(varX)*10) + ptr.val_num5);
     }
     else if(obj == ptr.num6)
     {
+      _checkOverflow(varX, ptr.val_num6);
       varX = _minusPrefix*((abs(varX)*10) + ptr.val_num6);
     }
     else if(obj == ptr.numMinus)
@@ -306,14 +321,17 @@ void Calculator::OnNumEvent(lv_obj_t* obj, lv_event_t event)
     }
     else if(obj == ptr.num1)
     {
+      _checkOverflow(varX, ptr.val_num1);
        varX = _minusPrefix*((abs(varX)*10) + ptr.val_num1);
     }
     else if(obj == ptr.num2)
     {
+      _checkOverflow(varX, ptr.val_num2);
        varX = _minusPrefix*((abs(varX)*10) + ptr.val_num2);
     }
     else if(obj == ptr.num3)
     {
+      _checkOverflow(varX, ptr.val_num3);
        varX = _minusPrefix*((abs(varX)*10) + ptr.val_num3);
     }
     else if(obj == ptr.numMultiply)
@@ -340,6 +358,17 @@ void Calculator::OnNumEvent(lv_obj_t* obj, lv_event_t event)
     else if(obj == ptr.numDel)
     {
        varX = varX/10;
+       if(varX==0)
+       {
+        _minusPrefix=1;
+       }
+       if(_getOverFlow == 1)
+       {
+        _getOverFlow=0;
+        varX=0;
+        lv_obj_set_hidden(label_x, FALSE);
+        lv_obj_set_hidden(label_error_overflow, TRUE);
+       }
     }
     else if(obj == ptr.numDivide)
     {
@@ -358,12 +387,17 @@ void Calculator::OnNumEvent(lv_obj_t* obj, lv_event_t event)
         updateDisplayY();
       }
     }
-    //TODO prevent overflow
+    //handle overflow
+    if(_getOverFlow == 1)
+    {
+      lv_obj_set_hidden(label_x, TRUE);
+      lv_obj_set_hidden(label_error_overflow, FALSE);
+    }
 
     updateDisplayX();
   }
   //check math symbols state
-  if ((ptr.currentMathSymbol != ptr.math_none))
+  if ((ptr.currentMathSymbol != ptr.math_none) && (_getOverFlow == 0))
   {
     switch (ptr.currentMathSymbol)
     {
@@ -604,4 +638,30 @@ void Calculator::_createBounder(void)
     line1 = lv_line_create(lv_scr_act(), NULL);
     lv_line_set_points(line1, line_points, 5);     /*Set the points*/
     lv_obj_add_style(line1, LV_STATE_DEFAULT, &style_line);
+}
+
+bool Calculator::_checkOverflow(int32_t _var, uint8_t _num)
+{
+  int32_t _firstValue = _var;
+  _var = _minusPrefix*((abs(_var)*10) + _num);
+  int32_t _secondValue=0; 
+  if(_firstValue>0) //_minusPrefix equals 1
+  {
+    _secondValue = (_var - _num)/10;
+  }
+  else if(_firstValue<0) //_minusPrefix equals -1
+  {
+    _secondValue = (-_var - _num)/(-10);
+  }
+  //assign and compare
+  if(_secondValue != _firstValue)
+  {
+    _getOverFlow=1;
+    _minusPrefix=1;
+  }
+  else
+  {
+    _getOverFlow=0;
+  }
+  return _getOverFlow;
 }
