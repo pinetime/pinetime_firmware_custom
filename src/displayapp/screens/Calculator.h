@@ -9,6 +9,7 @@
 #include "lvgl/src/lv_core/lv_style.h"
 #include "lvgl/src/lv_widgets/lv_line.h"
 
+
 namespace Pinetime
 {
     namespace Applications
@@ -38,7 +39,7 @@ namespace Pinetime
                 float_t varSum=0;
                 int32_t varSumInt=0;
                 lv_obj_t *label_mathSymbol;
-                
+                lv_obj_t *label_error_overflow;
                 //keypad btn
                 typedef struct
                 {
@@ -74,8 +75,10 @@ namespace Pinetime
                 bool _isTypeY=0;
                 bool _isGetSumValue=0;
                 bool _isFloatingPoint=0;
+                bool _getOverFlow=0;
                 int8_t _minusPrefix=1;
                 void _createBounder(void);
+                bool _checkOverflow(int32_t _var, uint8_t _num);
             };
         }
     }
