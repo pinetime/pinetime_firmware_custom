@@ -40,7 +40,8 @@ namespace Pinetime {
       SettingShakeThreshold,
       SettingBluetooth,
       Error,
-      MyAppsCustom
+      MyAppsCustom,
+      Snake
     };
   }
 }

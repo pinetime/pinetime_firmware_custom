@@ -394,6 +394,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Twos.cpp
         displayapp/screens/HeartRate.cpp
         displayapp/screens/MyApp.cpp
+        displayapp/screens/Snake.cpp
         displayapp/screens/Motion.cpp
         displayapp/screens/FlashLight.cpp
         displayapp/screens/List.cpp
@@ -613,6 +614,7 @@ set(INCLUDE_FILES
         displayapp/screens/Notifications.h
         displayapp/screens/HeartRate.h
         displayapp/screens/MyApp.h
+        displayapp/screens/Snake.h
         displayapp/screens/Metronome.h
         displayapp/screens/Motion.h
         displayapp/screens/Timer.h
