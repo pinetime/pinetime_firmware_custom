@@ -22,11 +22,15 @@ namespace Pinetime
                 Snake(Pinetime::Applications::DisplayApp* app,
                     System::SystemTask& systemTask);
                 ~Snake() override;
-                void OnNumEvent(lv_obj_t* obj, lv_event_t event);
+                bool OnTouchEvent(TouchEvents event) override;
                 
                 private:
                 Pinetime::System::SystemTask& systemTask;
                 lv_task_t* taskRefresh;
+                lv_obj_t* scoreText;
+                uint8_t score = 0;
+                uint8_t _updateScore(uint8_t _score);
+                void _createBounder(void);
             };
         }
     }
