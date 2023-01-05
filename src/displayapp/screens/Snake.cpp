@@ -19,7 +19,14 @@ systemTask{systemTask}
   lv_label_set_align(scoreText, LV_ALIGN_IN_LEFT_MID);
   lv_obj_align(scoreText, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
   lv_label_set_recolor(scoreText, true);
-  lv_label_set_text_fmt(scoreText, "Score #FFFF00 %i#", score);
+  // lv_label_set_text_fmt(scoreText, "Start #FFFF00 %i#", score);
+  //create head
+  objSnake[0].head = lv_obj_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_bg_color(objSnake[0].head, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  lv_obj_set_size(objSnake[0].head, SIZE_X, SIZE_Y);
+  objSnake[0].x = 50;
+  objSnake[0].y = 50;
+  lv_obj_set_pos(objSnake[0].head, objSnake[0].x, objSnake[0].y);
   //create bounding box
   _createBounder();
 }
@@ -31,25 +38,50 @@ Snake::~Snake()
   systemTask.PushMessage(Pinetime::System::Messages::EnableSleeping);
 }
 
+void Snake::Refresh()
+{
+  if(objMove==right)
+  {
+    moveRight();
+  }
+  else if (objMove==left)
+  {
+    // moveLeft();
+  }
+  else if (objMove==up)
+  {
+    // moveUp();
+  }
+  else if (objMove==down)
+  {
+    // moveDown();
+  }
+  if(score == 5)
+  {
+    length = score;
+    _snakeGrowUp();
+  }
+}
+
 bool Snake::OnTouchEvent(Pinetime::Applications::TouchEvents event)
 {
   switch (event)
   {
     case TouchEvents::SwipeRight:
-      score++;
-      _updateScore(score);
+      _updateGesture(TouchEvents::SwipeRight);
+      _updateScore();
     return true;
     case TouchEvents::SwipeLeft:
-      score--;
-      _updateScore(score);
+      _updateGesture(TouchEvents::SwipeLeft);
+      _updateScore();
     return true;
     case TouchEvents::SwipeUp:
-      score++;
-      _updateScore(score);
+      _updateGesture(TouchEvents::SwipeUp);
+      _updateScore();
     return true;
     case TouchEvents::SwipeDown:
-      score--;
-      _updateScore(score);
+      _updateGesture(TouchEvents::SwipeDown);
+      _updateScore();
     return true;
     default:
       return false;
@@ -57,10 +89,84 @@ bool Snake::OnTouchEvent(Pinetime::Applications::TouchEvents event)
   return false;
 }
 
-uint8_t Snake::_updateScore(uint8_t _score)
+void Snake::moveRight(void)
 {
-  lv_label_set_text_fmt(scoreText, "Your score: #FFFF00 %i#", _score);
-  return _score;
+  if(countAddr < _maxNumberArray())
+  {
+    objSnake[countAddr].x = objSnake[countAddr].x + 2*STEP;
+    objSnake[countAddr].y = objSnake[0].y;
+    lv_obj_set_pos(objSnake[countAddr].head, 
+                  objSnake[countAddr].x, 
+                  objSnake[countAddr].y);
+    countAddr++;
+  }
+  else
+  {
+    countAddr=0;
+  }
+}
+void Snake::moveLeft(void)
+{
+  objSnake[0].x-=STEP;
+  objSnake[0].y = objSnake[0].y;
+}
+void Snake::moveUp(void)
+{
+  objSnake[0].x = objSnake[0].x;
+  objSnake[0].y-=STEP;
+}
+void Snake::moveDown(void)
+{
+  objSnake[0].x = objSnake[0].x;
+  objSnake[0].y+=STEP;
+}
+
+uint8_t Snake::_updateScore(void)
+{
+  //test
+  switch (objMove)
+  {
+    case right:
+      score++;
+      break;
+    case left:
+      score--;
+      break;
+    case up:
+      score++;
+      break;
+    case down:
+      score--;
+      break;
+  }
+  //end
+  lv_label_set_text_fmt(scoreText, 
+                        "Your score: #FFFF00 %i#", 
+                        countAddr);
+  return score;
+}
+
+uint8_t Snake::_updateGesture(TouchEvents event)
+{
+
+  switch (event)
+  {
+    case TouchEvents::SwipeRight:
+      objMove = right; 
+      break;
+    case TouchEvents::SwipeLeft:
+      objMove = left;
+      break;
+    case TouchEvents::SwipeUp:
+      objMove = up;
+      break;
+    case TouchEvents::SwipeDown:
+      objMove = down;
+      break;
+    default:
+      objMove = none;
+  }
+  return objMove;
 }
 
 void Snake::_createBounder(void)
@@ -89,4 +195,33 @@ void Snake::_createBounder(void)
     lv_obj_add_style(line1, LV_STATE_DEFAULT, &style_line);
 }
 
+void Snake::_snakeGrowUp(void)
+{
+  uint8_t _arrSize = _maxNumberArray();
+  if(length > _arrSize) //increase the length after eating the food
+  {
+    for(uint8_t i = _arrSize; i < length; i++)
+    {
+      objSnake[i].head = lv_obj_create(lv_scr_act(), nullptr);
+      lv_obj_set_style_local_bg_color(objSnake[i].head, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+      lv_obj_set_size(objSnake[i].head, SIZE_X, SIZE_Y);
+      objSnake[i].x = objSnake[0].x-(i*5*STEP);
+      objSnake[i].y = objSnake[i-1].y;
+      lv_obj_set_pos(objSnake[i].head, objSnake[i].x, objSnake[i].y);
+    }
+  }
+}
 
+uint8_t Snake::_maxNumberArray(void)
+{
+  uint8_t _max=0;
+  for(uint8_t i=0; i<100; i++)
+  {
+    if(objSnake[i].x == 0)
+    {
+      _max = i;
+      break;
+    }
+  }
+  return _max;
+}
