@@ -91,18 +91,13 @@ bool Snake::OnTouchEvent(Pinetime::Applications::TouchEvents event)
 
 void Snake::moveRight(void)
 {
-  if(countAddr < _maxNumberArray())
+  for(uint8_t i=0; i < _maxNumberArray(); i++)
   {
-    objSnake[countAddr].x = objSnake[countAddr].x + 2*STEP;
-    objSnake[countAddr].y = objSnake[0].y;
-    lv_obj_set_pos(objSnake[countAddr].head, 
-                  objSnake[countAddr].x, 
-                  objSnake[countAddr].y);
-    countAddr++;
-  }
-  else
-  {
-    countAddr=0;
+    objSnake[i].x = objSnake[i].x + 2*STEP;
+    objSnake[i].y = objSnake[0].y;
+    lv_obj_set_pos(objSnake[i].head, 
+                  objSnake[i].x, 
+                  objSnake[i].y);
   }
 }
 void Snake::moveLeft(void)
@@ -142,7 +137,7 @@ uint8_t Snake::_updateScore(void)
   //end
   lv_label_set_text_fmt(scoreText, 
                         "Your score: #FFFF00 %i#", 
-                        countAddr);
+                        score);
   return score;
 }
 
@@ -205,7 +200,7 @@ void Snake::_snakeGrowUp(void)
       objSnake[i].head = lv_obj_create(lv_scr_act(), nullptr);
       lv_obj_set_style_local_bg_color(objSnake[i].head, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
       lv_obj_set_size(objSnake[i].head, SIZE_X, SIZE_Y);
-      objSnake[i].x = objSnake[0].x-(i*5*STEP);
+      objSnake[i].x = objSnake[0].x-(i*4*STEP);
       objSnake[i].y = objSnake[i-1].y;
       lv_obj_set_pos(objSnake[i].head, objSnake[i].x, objSnake[i].y);
     }
