@@ -101,6 +101,8 @@ void Snake::OnBtnEvent(lv_obj_t* obj, lv_event_t event)
     {
       //restart the game
       lv_obj_set_hidden(replay_btn, TRUE);
+      lv_obj_set_pos(objSnake[0].head, objSnake[0].x, objSnake[0].y);
+      lv_obj_set_hidden(objSnake[0].head, FALSE);
       objStateGame = run;
     }
   } 
@@ -268,6 +270,7 @@ void Snake::checkGameOver(void)
             lv_obj_set_hidden(objSnake[i].head, TRUE);
           }
           objSnake[0].x = objSnake[0].y = 50;
+          lv_obj_set_hidden(objSnake[0].head, TRUE);
           score =0;
           length = 1;
         } 
