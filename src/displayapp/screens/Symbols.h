@@ -43,6 +43,7 @@ namespace Pinetime {
         static constexpr const char* logoWindows = "\xEF\x85\xBA";
         static constexpr const char* gamePad = "\xEF\x84\x9B";
         static constexpr const char* calculator = "\xEF\x87\xAC";
+        static constexpr const char* redo = "\xEF\x80\x9E";
 
         // lv_font_sys_48.c
         static constexpr const char* settings = "\xEE\xA2\xB8";
