@@ -40,6 +40,10 @@ Snake::~Snake()
   systemTask.PushMessage(Pinetime::System::Messages::EnableSleeping);
 }
 
+/**
+ * @brief update snake moving continously
+ * 
+ */
 void Snake::Refresh()
 {
   if(objMove==right)
@@ -60,6 +64,11 @@ void Snake::Refresh()
   }
 }
 
+/**
+ * @brief handle when touch the screen
+ * also prevent reversing the direction
+ * @param event touching event
+ */
 bool Snake::OnTouchEvent(Pinetime::Applications::TouchEvents event)
 {
   switch (event)
@@ -106,6 +115,10 @@ bool Snake::OnTouchEvent(Pinetime::Applications::TouchEvents event)
   return false;
 }
 
+/**
+ * @brief handle when right-swipe detected
+ * turn the snake's head to the right
+ */
 void Snake::moveRight(void)
 {
   uint8_t _firstElement = objSnake[0].x;
@@ -124,6 +137,11 @@ void Snake::moveRight(void)
                   objSnake[i].y);
   }
 }
+
+/**
+ * @brief handle when left-swipe detected
+ * turn the snake's head to the left
+ */
 void Snake::moveLeft(void)
 {
   uint8_t _firstElement = objSnake[0].x;
@@ -141,6 +159,11 @@ void Snake::moveLeft(void)
                   objSnake[i].y);
   }
 }
+
+/**
+ * @brief handle when up-swipe detected
+ * turn the snake's head up
+ */
 void Snake::moveUp(void)
 {
   uint8_t _firstElement = objSnake[0].y;
@@ -158,6 +181,11 @@ void Snake::moveUp(void)
                   objSnake[i].y);
   }
 }
+
+/**
+ * @brief handle when down-swipe detected
+ * turn the snake's head down
+ */
 void Snake::moveDown(void)
 {
   uint8_t _firstElement = objSnake[0].y;
@@ -176,6 +204,11 @@ void Snake::moveDown(void)
   }
 }
 
+/**
+ * @brief continously update the score when eating food
+ * put inside the Refresh()
+ * @return the player score 
+ */
 uint8_t Snake::_updateScore(void)
 {
   //test
@@ -201,6 +234,12 @@ uint8_t Snake::_updateScore(void)
   return score;
 }
 
+/**
+ * @brief update moverment base on the the swiping
+ * independntly store the current and the previous movement
+ * @param event touching event
+ * @return the variable which store the movement 
+ */
 uint8_t Snake::_updateGesture(TouchEvents event)
 {
 
@@ -228,6 +267,9 @@ uint8_t Snake::_updateGesture(TouchEvents event)
   return objMove;
 }
 
+/**
+ * @brief create the bounding box (wall) around
+ */
 void Snake::_createBounder(void)
 {
     /*Create an array for the points of the line*/
@@ -254,6 +296,10 @@ void Snake::_createBounder(void)
     lv_obj_add_style(line1, LV_STATE_DEFAULT, &style_line);
 }
 
+/**
+ * @brief handle when the length is updated
+ * handle the place where new body appears
+ */
 void Snake::_snakeGrowUp(void)
 {
   uint8_t _arrSize = _maxSizeArray();
@@ -300,6 +346,11 @@ void Snake::_snakeGrowUp(void)
   }
 }
 
+/**
+ * @brief amount of elements inside the snake
+ * also same with the length
+ * @return return the quantity 
+ */
 uint8_t Snake::_maxSizeArray(void)
 {
   uint8_t _max=0;
