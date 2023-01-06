@@ -19,7 +19,7 @@ systemTask{systemTask}
   lv_label_set_align(scoreText, LV_ALIGN_IN_LEFT_MID);
   lv_obj_align(scoreText, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
   lv_label_set_recolor(scoreText, true);
-  // lv_label_set_text_fmt(scoreText, "Start #FFFF00 %i#", score);
+  lv_label_set_text_fmt(scoreText, "Lets move #FFFF00 %i#", score);
   //create head
   objSnake[0].head = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(objSnake[0].head, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
@@ -58,11 +58,6 @@ void Snake::Refresh()
   {
     moveDown();
   }
-  if(score == 5)
-  {
-    length = 20;
-    _snakeGrowUp();
-  }
 }
 
 bool Snake::OnTouchEvent(Pinetime::Applications::TouchEvents event)
@@ -100,6 +95,10 @@ bool Snake::OnTouchEvent(Pinetime::Applications::TouchEvents event)
         _updateScore();
       }
       else{}
+    return true;
+    case TouchEvents::DoubleTap:
+      length++;
+      _snakeGrowUp();
     return true;
     default:
       return false;
@@ -265,8 +264,37 @@ void Snake::_snakeGrowUp(void)
       objSnake[i].head = lv_obj_create(lv_scr_act(), nullptr);
       lv_obj_set_style_local_bg_color(objSnake[i].head, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
       lv_obj_set_size(objSnake[i].head, SIZE_X, SIZE_Y);
-      objSnake[i].x = objSnake[0].x-(i*4*STEP);
+
+      objSnake[i].x = objSnake[(i-1)].x-8; //8 is the distance between 2 dots
       objSnake[i].y = objSnake[i-1].y;
+
+      //handle new body-dot appears
+      if(objSnake[i-1].x == objSnake[i-2].x) //same in the verical
+      {
+        if(objSnake[i-1].y > objSnake[i-2].y) //point down
+        {
+          objSnake[i].x = objSnake[(i-1)].x;
+          objSnake[i].y = objSnake[(i-1)].y+STEP;
+        }
+        else //point up
+        {
+          objSnake[i].x = objSnake[(i-1)].x;
+          objSnake[i].y = objSnake[(i-1)].y-STEP;
+        }
+      }
+      else if(objSnake[i-1].y == objSnake[i-2].y) //same in the horizontal
+      {
+        if(objSnake[i-1].x > objSnake[i-2].x) //point right
+        {
+          objSnake[i].x = objSnake[(i-1)].x+STEP;
+          objSnake[i].y = objSnake[(i-1)].y;
+        }
+        else //point left
+        {
+          objSnake[i].x = objSnake[(i-1)].x-STEP;
+          objSnake[i].y = objSnake[(i-1)].y;
+        }
+      }
       lv_obj_set_pos(objSnake[i].head, objSnake[i].x, objSnake[i].y);
     }
   }

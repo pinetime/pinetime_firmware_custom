@@ -10,8 +10,8 @@
 #include "lvgl/src/lv_widgets/lv_line.h"
 
 #define STEP          4
-#define SIZE_X        13
-#define SIZE_Y        13
+#define SIZE_X        11
+#define SIZE_Y        11
 namespace Pinetime
 {
     namespace Applications
