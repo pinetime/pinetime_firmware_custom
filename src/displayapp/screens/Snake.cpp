@@ -24,6 +24,8 @@ systemTask{systemTask}
   objSnake[0].head = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(objSnake[0].head, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_obj_set_size(objSnake[0].head, SIZE_X, SIZE_Y);
+  lv_obj_set_style_local_bg_color(objSnake[0].head, LV_BTN_PART_MAIN, 
+                                  LV_STATE_DEFAULT, LV_COLOR_RED);
   objSnake[0].x = 50;
   objSnake[0].y = 50;
   lv_obj_set_pos(objSnake[0].head, objSnake[0].x, objSnake[0].y);
@@ -46,19 +48,19 @@ void Snake::Refresh()
   }
   else if (objMove==left)
   {
-    // moveLeft();
+    moveLeft();
   }
   else if (objMove==up)
   {
-    // moveUp();
+    moveUp();
   }
   else if (objMove==down)
   {
-    // moveDown();
+    moveDown();
   }
   if(score == 5)
   {
-    length = score;
+    length = 20;
     _snakeGrowUp();
   }
 }
@@ -68,20 +70,36 @@ bool Snake::OnTouchEvent(Pinetime::Applications::TouchEvents event)
   switch (event)
   {
     case TouchEvents::SwipeRight:
-      _updateGesture(TouchEvents::SwipeRight);
-      _updateScore();
+      if(objMove != left)
+      {
+        _updateGesture(TouchEvents::SwipeRight);
+        _updateScore();
+      }
+      else{}
     return true;
     case TouchEvents::SwipeLeft:
-      _updateGesture(TouchEvents::SwipeLeft);
-      _updateScore();
+      if(objMove != right)
+      {
+        _updateGesture(TouchEvents::SwipeLeft);
+        _updateScore();
+      }
+      else{}
     return true;
     case TouchEvents::SwipeUp:
-      _updateGesture(TouchEvents::SwipeUp);
-      _updateScore();
+      if(objMove != down)
+      {
+        _updateGesture(TouchEvents::SwipeUp);
+        _updateScore();
+      }
+      else{}
     return true;
     case TouchEvents::SwipeDown:
-      _updateGesture(TouchEvents::SwipeDown);
-      _updateScore();
+      if(objMove != up)
+      {
+        _updateGesture(TouchEvents::SwipeDown);
+        _updateScore();
+      }
+      else{}
     return true;
     default:
       return false;
@@ -91,10 +109,17 @@ bool Snake::OnTouchEvent(Pinetime::Applications::TouchEvents event)
 
 void Snake::moveRight(void)
 {
+  uint8_t _firstElement = objSnake[0].x;
+  for(uint8_t j=(_maxNumberArray()-1); j >0; j--)
+  {
+    objSnake[j].x = objSnake[j-1].x;
+    objSnake[j].y = objSnake[j-1].y;
+
+  }
+  _firstElement+=STEP;
+  objSnake[0].x=_firstElement;
   for(uint8_t i=0; i < _maxNumberArray(); i++)
   {
-    objSnake[i].x = objSnake[i].x + 2*STEP;
-    objSnake[i].y = objSnake[0].y;
     lv_obj_set_pos(objSnake[i].head, 
                   objSnake[i].x, 
                   objSnake[i].y);
@@ -102,18 +127,54 @@ void Snake::moveRight(void)
 }
 void Snake::moveLeft(void)
 {
-  objSnake[0].x-=STEP;
-  objSnake[0].y = objSnake[0].y;
+  uint8_t _firstElement = objSnake[0].x;
+  for(uint8_t j=(_maxNumberArray()-1); j >0; j--)
+  {
+      objSnake[j].x = objSnake[j-1].x;
+      objSnake[j].y = objSnake[j-1].y;
+  }
+  _firstElement-=STEP;
+    objSnake[0].x=_firstElement;
+  for(uint8_t i=0; i < _maxNumberArray(); i++)
+  {
+    lv_obj_set_pos(objSnake[i].head, 
+                  objSnake[i].x, 
+                  objSnake[i].y);
+  }
 }
 void Snake::moveUp(void)
 {
-  objSnake[0].x = objSnake[0].x;
-  objSnake[0].y-=STEP;
+  uint8_t _firstElement = objSnake[0].y;
+  for(uint8_t j=(_maxNumberArray()-1); j >0; j--)
+  {
+      objSnake[j].x = objSnake[j-1].x;
+      objSnake[j].y = objSnake[j-1].y;
+  }
+  _firstElement-=STEP;
+    objSnake[0].y=_firstElement;
+  for(uint8_t i=0; i < _maxNumberArray(); i++)
+  {
+    lv_obj_set_pos(objSnake[i].head, 
+                  objSnake[i].x, 
+                  objSnake[i].y);
+  }
 }
 void Snake::moveDown(void)
 {
-  objSnake[0].x = objSnake[0].x;
-  objSnake[0].y+=STEP;
+  uint8_t _firstElement = objSnake[0].y;
+  for(uint8_t j=(_maxNumberArray()-1); j >0; j--)
+  {
+      objSnake[j].x = objSnake[j-1].x;
+      objSnake[j].y = objSnake[j-1].y;
+  }
+  _firstElement+=STEP;
+    objSnake[0].y=_firstElement;
+  for(uint8_t i=0; i < _maxNumberArray(); i++)
+  {
+    lv_obj_set_pos(objSnake[i].head, 
+                  objSnake[i].x, 
+                  objSnake[i].y);
+  }
 }
 
 uint8_t Snake::_updateScore(void)
@@ -147,15 +208,19 @@ uint8_t Snake::_updateGesture(TouchEvents event)
   switch (event)
   {
     case TouchEvents::SwipeRight:
+      objLastMove = objMove;
       objMove = right; 
       break;
     case TouchEvents::SwipeLeft:
+      objLastMove = objMove;
       objMove = left;
       break;
     case TouchEvents::SwipeUp:
+      objLastMove = objMove;
       objMove = up;
       break;
     case TouchEvents::SwipeDown:
+      objLastMove = objMove;
       objMove = down;
       break;
     default:

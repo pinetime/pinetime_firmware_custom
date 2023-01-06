@@ -9,9 +9,9 @@
 #include "lvgl/src/lv_core/lv_style.h"
 #include "lvgl/src/lv_widgets/lv_line.h"
 
-#define STEP          2
-#define SIZE_X        10
-#define SIZE_Y        10
+#define STEP          4
+#define SIZE_X        13
+#define SIZE_Y        13
 namespace Pinetime
 {
     namespace Applications
@@ -46,13 +46,9 @@ namespace Pinetime
                 //movement state 
                 enum e_gesture {none, right, left, up, down};
                 enum e_gesture objMove = none;
-                
-                //system state
-                enum e_system {state_none, run, stop};
-                enum e_system objState;
+                enum e_gesture objLastMove = none;
                 
                 uint8_t score = 0;
-                uint8_t countAddr = 0;
                 uint8_t _updateScore(void);
                 uint8_t _updateGesture(TouchEvents event);
                 void _createBounder(void);
