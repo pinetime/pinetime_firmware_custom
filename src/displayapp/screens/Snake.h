@@ -26,18 +26,27 @@ namespace Pinetime
                 ~Snake() override;
                 void Refresh() override;
                 bool OnTouchEvent(TouchEvents event) override;
+                void OnBtnEvent(lv_obj_t* obj, lv_event_t event);
                 void moveRight(void);
                 void moveLeft(void);
                 void moveUp(void);
                 void moveDown(void);
+                void checkGameOver(void);
                 uint8_t length=1;
+                lv_obj_t *replay_btn, *replay_label;
                 typedef struct st_Snake
                 {
                     lv_obj_t* head;
                     uint8_t x,y;
                 };
                 st_Snake objSnake[100] = {};
-
+                typedef struct st_Food
+                {
+                    lv_obj_t* smallFood;
+                    uint8_t f_x,f_y=0;
+                    
+                };
+                st_Food objFood;
                 private:
                 Pinetime::System::SystemTask& systemTask;
                 lv_task_t* taskRefresh;
@@ -47,6 +56,9 @@ namespace Pinetime
                 enum e_gesture {none, right, left, up, down};
                 enum e_gesture objMove = none;
                 enum e_gesture objLastMove = none;
+                //operation state
+                enum e_stateGame {state_none, start, stop, run};
+                enum e_stateGame objStateGame= state_none;
                 
                 uint8_t score = 0;
                 uint8_t _updateScore(void);

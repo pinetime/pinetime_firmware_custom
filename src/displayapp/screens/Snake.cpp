@@ -6,6 +6,15 @@
 
 using namespace Pinetime::Applications::Screens;
 
+namespace
+{
+  void btnNumEventHandler(lv_obj_t* obj, lv_event_t event)
+  {
+    auto* screen = static_cast<Snake*>(obj->user_data);
+    screen->OnBtnEvent(obj, event);
+  }
+}
+
 Snake::Snake(Pinetime::Applications::DisplayApp* app,
                     System::SystemTask& systemTask)
 : Screen(app),
@@ -29,8 +38,22 @@ systemTask{systemTask}
   objSnake[0].x = 50;
   objSnake[0].y = 50;
   lv_obj_set_pos(objSnake[0].head, objSnake[0].x, objSnake[0].y);
+  //create replay button
+  replay_btn = lv_btn_create(lv_scr_act(), nullptr);
+  replay_btn->user_data = this;
+  lv_obj_set_height(replay_btn, 65);
+  lv_obj_set_width(replay_btn, 80);
+  lv_obj_set_event_cb(replay_btn, btnNumEventHandler);
+  lv_obj_align(replay_btn, nullptr, LV_ALIGN_CENTER, 0, 0);
+  replay_label = lv_label_create(replay_btn, nullptr);
+  lv_label_set_text_static(replay_label,Symbols::redo);
+  lv_obj_set_hidden(replay_btn, TRUE);
+  lv_obj_set_style_local_bg_color(replay_btn, LV_BTN_PART_MAIN, 
+                                  LV_STATE_DEFAULT, LV_COLOR_RED);
   //create bounding box
   _createBounder();
+  //assign operating state to variable
+  objStateGame = run;
 }
 
 Snake::~Snake() 
@@ -62,6 +85,25 @@ void Snake::Refresh()
   {
     moveDown();
   }
+  checkGameOver();
+}
+
+/**
+ * @brief handle whenever a buton pressed
+ * @param obj kind of button
+ * @param event button press's type
+ */
+void Snake::OnBtnEvent(lv_obj_t* obj, lv_event_t event)
+{
+  if (event == LV_EVENT_PRESSED)
+  {
+    if(obj == replay_btn)
+    {
+      //restart the game
+      lv_obj_set_hidden(replay_btn, TRUE);
+      objStateGame = run;
+    }
+  } 
 }
 
 /**
@@ -74,7 +116,7 @@ bool Snake::OnTouchEvent(Pinetime::Applications::TouchEvents event)
   switch (event)
   {
     case TouchEvents::SwipeRight:
-      if(objMove != left)
+      if(objMove != left && objStateGame!=stop)
       {
         _updateGesture(TouchEvents::SwipeRight);
         _updateScore();
@@ -82,7 +124,7 @@ bool Snake::OnTouchEvent(Pinetime::Applications::TouchEvents event)
       else{}
     return true;
     case TouchEvents::SwipeLeft:
-      if(objMove != right)
+      if(objMove != right && objStateGame!=stop)
       {
         _updateGesture(TouchEvents::SwipeLeft);
         _updateScore();
@@ -90,7 +132,7 @@ bool Snake::OnTouchEvent(Pinetime::Applications::TouchEvents event)
       else{}
     return true;
     case TouchEvents::SwipeUp:
-      if(objMove != down)
+      if(objMove != down && objStateGame!=stop)
       {
         _updateGesture(TouchEvents::SwipeUp);
         _updateScore();
@@ -98,7 +140,7 @@ bool Snake::OnTouchEvent(Pinetime::Applications::TouchEvents event)
       else{}
     return true;
     case TouchEvents::SwipeDown:
-      if(objMove != up)
+      if(objMove != up && objStateGame!=stop)
       {
         _updateGesture(TouchEvents::SwipeDown);
         _updateScore();
@@ -205,6 +247,34 @@ void Snake::moveDown(void)
 }
 
 /**
+ * @brief check either the snake hit the wall or its body 
+ * put in Refresh()
+ */
+void Snake::checkGameOver(void)
+{
+  uint8_t _arrSize = _maxSizeArray();
+  for(uint8_t i=0; i<_arrSize ;i++)
+  {
+    if((objSnake[i].x >227)||(objSnake[i].x<5)||
+        (objSnake[i].y >227) || (objSnake[i].y<30))
+        {
+          lv_obj_set_hidden(replay_btn, FALSE);
+          objMove = none;
+          objStateGame = stop;
+          for(uint8_t i=1; i< _arrSize; i++)
+          {
+            objSnake[i].x = 0;
+            objSnake[i].y = 0;
+            lv_obj_set_hidden(objSnake[i].head, TRUE);
+          }
+          objSnake[0].x = objSnake[0].y = 50;
+          score =0;
+          length = 1;
+        } 
+  }
+}
+
+/**
  * @brief continously update the score when eating food
  * put inside the Refresh()
  * @return the player score 
@@ -230,7 +300,7 @@ uint8_t Snake::_updateScore(void)
   //end
   lv_label_set_text_fmt(scoreText, 
                         "Your score: #FFFF00 %i#", 
-                        score);
+                        length);
   return score;
 }
 
@@ -278,7 +348,7 @@ void Snake::_createBounder(void)
      *    |                                 |
      * (x1[0],y2[3])-----------------(x2[2],y2[3])
      */
-    uint8_t _arr[4]={0,24,240,220};
+    uint8_t _arr[4]={0,24,240,240};
     static lv_point_t line_points[] = { {_arr[0], _arr[1]}, {_arr[2], _arr[1]}, 
                   {_arr[2], _arr[3]}, {_arr[0], _arr[3]}, {_arr[0], _arr[1]}};
 
@@ -341,6 +411,7 @@ void Snake::_snakeGrowUp(void)
           objSnake[i].y = objSnake[(i-1)].y;
         }
       }
+      lv_obj_set_hidden(objSnake[i].head, FALSE);
       lv_obj_set_pos(objSnake[i].head, objSnake[i].x, objSnake[i].y);
     }
   }
