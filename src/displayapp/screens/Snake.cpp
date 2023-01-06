@@ -95,15 +95,19 @@ void Snake::Refresh()
  */
 void Snake::OnBtnEvent(lv_obj_t* obj, lv_event_t event)
 {
-  if (event == LV_EVENT_PRESSED)
+  if (event == LV_EVENT_CLICKED)
   {
     if(obj == replay_btn)
     {
       //restart the game
+  
       lv_obj_set_hidden(replay_btn, TRUE);
       lv_obj_set_pos(objSnake[0].head, objSnake[0].x, objSnake[0].y);
       lv_obj_set_hidden(objSnake[0].head, FALSE);
       objStateGame = run;
+      lv_label_set_text_fmt(scoreText, 
+                        "Lets move #FFFF00 %i#", 
+                        score);
     }
   } 
 }
@@ -303,7 +307,7 @@ uint8_t Snake::_updateScore(void)
   //end
   lv_label_set_text_fmt(scoreText, 
                         "Your score: #FFFF00 %i#", 
-                        length);
+                        score);
   return score;
 }
 
