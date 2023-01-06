@@ -110,7 +110,7 @@ bool Snake::OnTouchEvent(Pinetime::Applications::TouchEvents event)
 void Snake::moveRight(void)
 {
   uint8_t _firstElement = objSnake[0].x;
-  for(uint8_t j=(_maxNumberArray()-1); j >0; j--)
+  for(uint8_t j=(_maxSizeArray()-1); j >0; j--)
   {
     objSnake[j].x = objSnake[j-1].x;
     objSnake[j].y = objSnake[j-1].y;
@@ -118,7 +118,7 @@ void Snake::moveRight(void)
   }
   _firstElement+=STEP;
   objSnake[0].x=_firstElement;
-  for(uint8_t i=0; i < _maxNumberArray(); i++)
+  for(uint8_t i=0; i < _maxSizeArray(); i++)
   {
     lv_obj_set_pos(objSnake[i].head, 
                   objSnake[i].x, 
@@ -128,14 +128,14 @@ void Snake::moveRight(void)
 void Snake::moveLeft(void)
 {
   uint8_t _firstElement = objSnake[0].x;
-  for(uint8_t j=(_maxNumberArray()-1); j >0; j--)
+  for(uint8_t j=(_maxSizeArray()-1); j >0; j--)
   {
       objSnake[j].x = objSnake[j-1].x;
       objSnake[j].y = objSnake[j-1].y;
   }
   _firstElement-=STEP;
     objSnake[0].x=_firstElement;
-  for(uint8_t i=0; i < _maxNumberArray(); i++)
+  for(uint8_t i=0; i < _maxSizeArray(); i++)
   {
     lv_obj_set_pos(objSnake[i].head, 
                   objSnake[i].x, 
@@ -145,14 +145,14 @@ void Snake::moveLeft(void)
 void Snake::moveUp(void)
 {
   uint8_t _firstElement = objSnake[0].y;
-  for(uint8_t j=(_maxNumberArray()-1); j >0; j--)
+  for(uint8_t j=(_maxSizeArray()-1); j >0; j--)
   {
       objSnake[j].x = objSnake[j-1].x;
       objSnake[j].y = objSnake[j-1].y;
   }
   _firstElement-=STEP;
     objSnake[0].y=_firstElement;
-  for(uint8_t i=0; i < _maxNumberArray(); i++)
+  for(uint8_t i=0; i < _maxSizeArray(); i++)
   {
     lv_obj_set_pos(objSnake[i].head, 
                   objSnake[i].x, 
@@ -162,14 +162,14 @@ void Snake::moveUp(void)
 void Snake::moveDown(void)
 {
   uint8_t _firstElement = objSnake[0].y;
-  for(uint8_t j=(_maxNumberArray()-1); j >0; j--)
+  for(uint8_t j=(_maxSizeArray()-1); j >0; j--)
   {
       objSnake[j].x = objSnake[j-1].x;
       objSnake[j].y = objSnake[j-1].y;
   }
   _firstElement+=STEP;
     objSnake[0].y=_firstElement;
-  for(uint8_t i=0; i < _maxNumberArray(); i++)
+  for(uint8_t i=0; i < _maxSizeArray(); i++)
   {
     lv_obj_set_pos(objSnake[i].head, 
                   objSnake[i].x, 
@@ -257,7 +257,7 @@ void Snake::_createBounder(void)
 
 void Snake::_snakeGrowUp(void)
 {
-  uint8_t _arrSize = _maxNumberArray();
+  uint8_t _arrSize = _maxSizeArray();
   if(length > _arrSize) //increase the length after eating the food
   {
     for(uint8_t i = _arrSize; i < length; i++)
@@ -272,7 +272,7 @@ void Snake::_snakeGrowUp(void)
   }
 }
 
-uint8_t Snake::_maxNumberArray(void)
+uint8_t Snake::_maxSizeArray(void)
 {
   uint8_t _max=0;
   for(uint8_t i=0; i<100; i++)

@@ -53,7 +53,7 @@ namespace Pinetime
                 uint8_t _updateGesture(TouchEvents event);
                 void _createBounder(void);
                 void _snakeGrowUp(void);
-                uint8_t _maxNumberArray(void);
+                uint8_t _maxSizeArray(void);
             };
         }
     }
