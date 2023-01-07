@@ -44,11 +44,18 @@ systemTask{systemTask}
   lv_obj_set_height(replay_btn, 65);
   lv_obj_set_width(replay_btn, 80);
   lv_obj_set_event_cb(replay_btn, btnNumEventHandler);
-  lv_obj_align(replay_btn, nullptr, LV_ALIGN_CENTER, 0, 0);
+  lv_obj_align(replay_btn, nullptr, LV_ALIGN_CENTER, 0, -10);
   replay_label = lv_label_create(replay_btn, nullptr);
   lv_label_set_text_static(replay_label,Symbols::redo);
   lv_obj_set_hidden(replay_btn, TRUE);
   lv_obj_set_style_local_bg_color(replay_btn, LV_BTN_PART_MAIN, 
+                                  LV_STATE_DEFAULT, LV_COLOR_RED);
+  //create replay text
+  replayText = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_align(replayText, replay_btn, LV_ALIGN_CENTER, -35, 50);
+  lv_label_set_text_fmt(replayText, "Play again");
+  lv_obj_set_hidden(replayText, TRUE);
+  lv_obj_set_style_local_bg_color(replayText, LV_BTN_PART_MAIN, 
                                   LV_STATE_DEFAULT, LV_COLOR_RED);
   //create bounding box
   _createBounder();
@@ -102,6 +109,7 @@ void Snake::OnBtnEvent(lv_obj_t* obj, lv_event_t event)
       //restart the game
   
       lv_obj_set_hidden(replay_btn, TRUE);
+      lv_obj_set_hidden(replayText, TRUE);
       lv_obj_set_pos(objSnake[0].head, objSnake[0].x, objSnake[0].y);
       lv_obj_set_hidden(objSnake[0].head, FALSE);
       objStateGame = run;
@@ -265,6 +273,7 @@ void Snake::checkGameOver(void)
         (objSnake[i].y >227) || (objSnake[i].y<30))
         {
           lv_obj_set_hidden(replay_btn, FALSE);
+          lv_obj_set_hidden(replayText, FALSE);
           objMove = none;
           objStateGame = stop;
           for(uint8_t i=1; i< _arrSize; i++)

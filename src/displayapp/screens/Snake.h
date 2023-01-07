@@ -33,7 +33,6 @@ namespace Pinetime
                 void moveDown(void);
                 void checkGameOver(void);
                 uint8_t length=1;
-                lv_obj_t *replay_btn, *replay_label;
                 typedef struct st_Snake
                 {
                     lv_obj_t* head;
@@ -51,6 +50,8 @@ namespace Pinetime
                 Pinetime::System::SystemTask& systemTask;
                 lv_task_t* taskRefresh;
                 lv_obj_t* scoreText;
+                lv_obj_t *replay_btn, *replay_label;
+                lv_obj_t* replayText;
                 
                 //movement state 
                 enum e_gesture {none, right, left, up, down};
