@@ -32,6 +32,7 @@ namespace Pinetime
                 void moveUp(void);
                 void moveDown(void);
                 void checkGameOver(void);
+                void createFood(void);
                 uint8_t length=1;
                 typedef struct st_Snake
                 {

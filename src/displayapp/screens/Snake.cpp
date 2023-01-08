@@ -55,8 +55,10 @@ systemTask{systemTask}
   lv_obj_align(replayText, replay_btn, LV_ALIGN_CENTER, -35, 50);
   lv_label_set_text_fmt(replayText, "Play again");
   lv_obj_set_hidden(replayText, TRUE);
-  lv_obj_set_style_local_bg_color(replayText, LV_BTN_PART_MAIN, 
-                                  LV_STATE_DEFAULT, LV_COLOR_RED);
+  lv_obj_set_style_local_text_color(replayText, 
+                                    LV_LABEL_PART_MAIN, 
+                                    LV_STATE_DEFAULT, 
+                                    LV_COLOR_RED);
   //create bounding box
   _createBounder();
   //assign operating state to variable
@@ -107,9 +109,12 @@ void Snake::OnBtnEvent(lv_obj_t* obj, lv_event_t event)
     if(obj == replay_btn)
     {
       //restart the game
+      uint8_t _arrSize = _maxSizeArray();
   
       lv_obj_set_hidden(replay_btn, TRUE);
       lv_obj_set_hidden(replayText, TRUE);
+      
+      objSnake[0].x = objSnake[0].y = 50;
       lv_obj_set_pos(objSnake[0].head, objSnake[0].x, objSnake[0].y);
       lv_obj_set_hidden(objSnake[0].head, FALSE);
       objStateGame = run;
@@ -266,28 +271,50 @@ void Snake::moveDown(void)
  */
 void Snake::checkGameOver(void)
 {
+  static uint16_t _delayDisplay=0;
+  bool _isHittingsBody=0;
   uint8_t _arrSize = _maxSizeArray();
   for(uint8_t i=0; i<_arrSize ;i++)
   {
-    if((objSnake[i].x >227)||(objSnake[i].x<5)||
-        (objSnake[i].y >227) || (objSnake[i].y<30))
-        {
-          lv_obj_set_hidden(replay_btn, FALSE);
-          lv_obj_set_hidden(replayText, FALSE);
-          objMove = none;
-          objStateGame = stop;
-          for(uint8_t i=1; i< _arrSize; i++)
-          {
-            objSnake[i].x = 0;
-            objSnake[i].y = 0;
-            lv_obj_set_hidden(objSnake[i].head, TRUE);
-          }
-          objSnake[0].x = objSnake[0].y = 50;
-          lv_obj_set_hidden(objSnake[0].head, TRUE);
-          score =0;
-          length = 1;
-        } 
+    //check if the snake hit itself
+    if((i!=0)&&
+      (objSnake[0].x == objSnake[i].x)&&(objSnake[0].y == objSnake[i].y))
+    {
+      _isHittingsBody=1;
+    }
   }
+  //check if the snake hit the wall
+  if((objSnake[0].x >227)||(objSnake[0].x<5)||
+      (objSnake[0].y >227)||(objSnake[0].y<30)||(_isHittingsBody==1))
+  {
+    objMove = none;
+    objStateGame = stop;
+    _delayDisplay++;
+    if(_delayDisplay == 10)
+    {
+      _delayDisplay=0;
+      score =0;
+      length = 1;
+      //hide the previous snake
+      for(uint8_t i=1; i< _arrSize; i++)
+      {
+        objSnake[i].x = 0;
+        objSnake[i].y = 0;
+        lv_obj_set_hidden(objSnake[i].head, TRUE);
+      }
+      lv_obj_set_hidden(objSnake[0].head, TRUE);
+      lv_obj_set_hidden(replay_btn, FALSE);
+      lv_obj_set_hidden(replayText, FALSE);
+    }
+  }
+}
+
+/**
+ * @brief randomly creating food in free zone of the screen
+ */
+void Snake::createFood(void)
+{
+   
 }
 
 /**
