@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <chrono>
+#include <stdlib.h>
 #include "displayapp/screens/Screen.h"
 #include "systemtask/SystemTask.h"
 #include "lvgl/src/lv_core/lv_style.h"
@@ -12,6 +13,10 @@
 #define STEP          4
 #define SIZE_X        11
 #define SIZE_Y        11
+#define SIZE_FOOD     16
+#define MAX_RAND      220
+#define MIN_RAND_X    10
+#define MIN_RAND_Y    30  
 namespace Pinetime
 {
     namespace Applications
@@ -37,14 +42,15 @@ namespace Pinetime
                 typedef struct st_Snake
                 {
                     lv_obj_t* head;
-                    uint8_t x,y;
+                    int16_t x,y;
                 };
                 st_Snake objSnake[100] = {};
                 typedef struct st_Food
                 {
                     lv_obj_t* smallFood;
-                    uint8_t f_x,f_y=0;
-                    
+                    int16_t f_x,f_y=100;  
+                    bool _firstInitFood=1;  
+                    bool _getNewFood=0;
                 };
                 st_Food objFood;
                 private:

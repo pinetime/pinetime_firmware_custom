@@ -59,6 +59,13 @@ systemTask{systemTask}
                                     LV_LABEL_PART_MAIN, 
                                     LV_STATE_DEFAULT, 
                                     LV_COLOR_RED);
+  //create food
+  objFood.smallFood = lv_obj_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_bg_color(objFood.smallFood, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  lv_obj_set_size(objFood.smallFood, SIZE_FOOD, SIZE_FOOD);
+  lv_obj_set_style_local_bg_color(objFood.smallFood, LV_BTN_PART_MAIN, 
+                                  LV_STATE_DEFAULT, LV_COLOR_ORANGE);
+  createFood();
   //create bounding box
   _createBounder();
   //assign operating state to variable
@@ -68,6 +75,7 @@ systemTask{systemTask}
 Snake::~Snake() 
 {
   lv_task_del(taskRefresh);
+  lv_obj_del(objFood.smallFood);
   lv_obj_clean(lv_scr_act());
   systemTask.PushMessage(Pinetime::System::Messages::EnableSleeping);
 }
@@ -95,6 +103,11 @@ void Snake::Refresh()
     moveDown();
   }
   checkGameOver();
+  // if(objStateGame == run)
+  // {
+  createFood();
+  // }
+  _updateScore();
 }
 
 /**
@@ -117,6 +130,7 @@ void Snake::OnBtnEvent(lv_obj_t* obj, lv_event_t event)
       objSnake[0].x = objSnake[0].y = 50;
       lv_obj_set_pos(objSnake[0].head, objSnake[0].x, objSnake[0].y);
       lv_obj_set_hidden(objSnake[0].head, FALSE);
+      lv_obj_set_hidden(objFood.smallFood, FALSE);
       objStateGame = run;
       lv_label_set_text_fmt(scoreText, 
                         "Lets move #FFFF00 %i#", 
@@ -138,7 +152,6 @@ bool Snake::OnTouchEvent(Pinetime::Applications::TouchEvents event)
       if(objMove != left && objStateGame!=stop)
       {
         _updateGesture(TouchEvents::SwipeRight);
-        _updateScore();
       }
       else{}
     return true;
@@ -146,7 +159,6 @@ bool Snake::OnTouchEvent(Pinetime::Applications::TouchEvents event)
       if(objMove != right && objStateGame!=stop)
       {
         _updateGesture(TouchEvents::SwipeLeft);
-        _updateScore();
       }
       else{}
     return true;
@@ -154,7 +166,6 @@ bool Snake::OnTouchEvent(Pinetime::Applications::TouchEvents event)
       if(objMove != down && objStateGame!=stop)
       {
         _updateGesture(TouchEvents::SwipeUp);
-        _updateScore();
       }
       else{}
     return true;
@@ -162,7 +173,6 @@ bool Snake::OnTouchEvent(Pinetime::Applications::TouchEvents event)
       if(objMove != up && objStateGame!=stop)
       {
         _updateGesture(TouchEvents::SwipeDown);
-        _updateScore();
       }
       else{}
     return true;
@@ -302,6 +312,7 @@ void Snake::checkGameOver(void)
         objSnake[i].y = 0;
         lv_obj_set_hidden(objSnake[i].head, TRUE);
       }
+      lv_obj_set_hidden(objFood.smallFood, TRUE);
       lv_obj_set_hidden(objSnake[0].head, TRUE);
       lv_obj_set_hidden(replay_btn, FALSE);
       lv_obj_set_hidden(replayText, FALSE);
@@ -314,7 +325,26 @@ void Snake::checkGameOver(void)
  */
 void Snake::createFood(void)
 {
-   
+  uint8_t _arrSize = _maxSizeArray();
+  uint8_t _initXValue = 100;
+  uint8_t _initYValue = 100;
+  if(objFood._firstInitFood == 1 || objFood._getNewFood == 1)
+  {
+    objFood._firstInitFood=objFood._getNewFood=0;
+    _initXValue = (uint8_t)(rand()%(MAX_RAND-MIN_RAND_X+1)+MIN_RAND_X);
+    _initYValue = (uint8_t)(rand()%(MAX_RAND-MIN_RAND_Y+1)+MIN_RAND_Y);
+    objFood.f_x = _initXValue;
+    objFood.f_y = _initYValue;
+    lv_obj_set_pos(objFood.smallFood, objFood.f_x, objFood.f_y);
+  }
+  //handle when snake eats
+  if((abs(objFood.f_x-objSnake[0].x)<11) && 
+     (abs(objFood.f_y-objSnake[0].y)<11))
+  {
+    length++;
+    _snakeGrowUp();
+    objFood._getNewFood=1;
+  }
 }
 
 /**
@@ -324,23 +354,7 @@ void Snake::createFood(void)
  */
 uint8_t Snake::_updateScore(void)
 {
-  //test
-  switch (objMove)
-  {
-    case right:
-      score++;
-      break;
-    case left:
-      score--;
-      break;
-    case up:
-      score++;
-      break;
-    case down:
-      score--;
-      break;
-  }
-  //end
+  score = length;
   lv_label_set_text_fmt(scoreText, 
                         "Your score: #FFFF00 %i#", 
                         score);
