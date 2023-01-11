@@ -66,6 +66,7 @@ systemTask{systemTask}
   lv_obj_set_style_local_bg_color(objFood.smallFood, LV_BTN_PART_MAIN, 
                                   LV_STATE_DEFAULT, LV_COLOR_ORANGE);
   createFood();
+  srand(xTaskGetTickCount());
   //create bounding box
   _createBounder();
   //assign operating state to variable
@@ -103,10 +104,7 @@ void Snake::Refresh()
     moveDown();
   }
   checkGameOver();
-  // if(objStateGame == run)
-  // {
   createFood();
-  // }
   _updateScore();
 }
 
@@ -132,6 +130,7 @@ void Snake::OnBtnEvent(lv_obj_t* obj, lv_event_t event)
       lv_obj_set_hidden(objSnake[0].head, FALSE);
       lv_obj_set_hidden(objFood.smallFood, FALSE);
       objStateGame = run;
+      score=0;
       lv_label_set_text_fmt(scoreText, 
                         "Lets move #FFFF00 %i#", 
                         score);
@@ -175,10 +174,6 @@ bool Snake::OnTouchEvent(Pinetime::Applications::TouchEvents event)
         _updateGesture(TouchEvents::SwipeDown);
       }
       else{}
-    return true;
-    case TouchEvents::DoubleTap:
-      length++;
-      _snakeGrowUp();
     return true;
     default:
       return false;
@@ -303,7 +298,6 @@ void Snake::checkGameOver(void)
     if(_delayDisplay == 10)
     {
       _delayDisplay=0;
-      score =0;
       length = 1;
       //hide the previous snake
       for(uint8_t i=1; i< _arrSize; i++)
@@ -342,6 +336,7 @@ void Snake::createFood(void)
      (abs(objFood.f_y-objSnake[0].y)<11))
   {
     length++;
+    score++;
     _snakeGrowUp();
     objFood._getNewFood=1;
   }
@@ -354,7 +349,6 @@ void Snake::createFood(void)
  */
 uint8_t Snake::_updateScore(void)
 {
-  score = length;
   lv_label_set_text_fmt(scoreText, 
                         "Your score: #FFFF00 %i#", 
                         score);
