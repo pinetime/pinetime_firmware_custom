@@ -477,6 +477,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::Calculator:
       currentScreen = std::make_unique<Screens::Calculator>(this, *systemTask);
+      break;
     case Apps::Snake:
       currentScreen = std::make_unique<Screens::Snake>(this, *systemTask);
       break;
