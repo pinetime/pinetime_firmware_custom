@@ -39,6 +39,8 @@ namespace Pinetime
                 void checkGameOver(void);
                 void createFood(void);
                 uint8_t length=1;
+
+                //TODO either change to use vector or linked list
                 typedef struct st_Snake
                 {
                     lv_obj_t* head;

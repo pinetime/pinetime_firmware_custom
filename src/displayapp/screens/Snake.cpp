@@ -322,7 +322,7 @@ void Snake::createFood(void)
   uint8_t _arrSize = _maxSizeArray();
   uint8_t _initXValue = 100;
   uint8_t _initYValue = 100;
-  if(objFood._firstInitFood == 1 || objFood._getNewFood == 1)
+  if((objFood._firstInitFood == 1)||(objFood._getNewFood == 1))
   {
     objFood._firstInitFood=objFood._getNewFood=0;
     _initXValue = (uint8_t)(rand()%(MAX_RAND-MIN_RAND_X+1)+MIN_RAND_X);
