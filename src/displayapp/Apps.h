@@ -41,7 +41,8 @@ namespace Pinetime {
       SettingBluetooth,
       Error,
       MyAppsCustom,
-      Snake
+      Snake,
+      Calculator
     };
   }
 }

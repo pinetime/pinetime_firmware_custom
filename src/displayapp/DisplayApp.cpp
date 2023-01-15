@@ -3,6 +3,7 @@
 #include "displayapp/screens/HeartRate.h"
 #include "displayapp/screens/MyApp.h"
 #include "displayapp/screens/Snake.h"
+#include "displayapp/screens/Calculator.h"
 #include "displayapp/screens/Motion.h"
 #include "displayapp/screens/Timer.h"
 #include "displayapp/screens/Alarm.h"
@@ -19,9 +20,9 @@
 // #include "displayapp/screens/InfiniPaint.h"
 #include "displayapp/screens/Paddle.h"
 #include "displayapp/screens/StopWatch.h"
-#include "displayapp/screens/Metronome.h"
+// #include "displayapp/screens/Metronome.h"
 // #include "displayapp/screens/Music.h"
-#include "displayapp/screens/Navigation.h"
+// #include "displayapp/screens/Navigation.h"
 #include "displayapp/screens/Notifications.h"
 #include "displayapp/screens/SystemInfo.h"
 #include "displayapp/screens/Tile.h"
@@ -465,22 +466,24 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
     // case Apps::Music:
     //   currentScreen = std::make_unique<Screens::Music>(this, systemTask->nimble().music());
     //   break;
-    case Apps::Navigation:
-      currentScreen = std::make_unique<Screens::Navigation>(this, systemTask->nimble().navigation());
-      break;
+    // case Apps::Navigation:
+    //   currentScreen = std::make_unique<Screens::Navigation>(this, systemTask->nimble().navigation());
+    //   break;
     case Apps::HeartRate:
       currentScreen = std::make_unique<Screens::HeartRate>(this, heartRateController, *systemTask);
       break;
     case Apps::MyAppsCustom:
       currentScreen = std::make_unique<Screens::MyApp>(this, heartRateController, *systemTask, motionController);
       break;
+    case Apps::Calculator:
+      currentScreen = std::make_unique<Screens::Calculator>(this, *systemTask);
     case Apps::Snake:
       currentScreen = std::make_unique<Screens::Snake>(this, *systemTask);
       break;
-    case Apps::Metronome:
-      currentScreen = std::make_unique<Screens::Metronome>(this, motorController, *systemTask);
-      ReturnApp(Apps::Launcher, FullRefreshDirections::Down, TouchEvents::None);
-      break;
+    // case Apps::Metronome:
+    //   currentScreen = std::make_unique<Screens::Metronome>(this, motorController, *systemTask);
+    //   ReturnApp(Apps::Launcher, FullRefreshDirections::Down, TouchEvents::None);
+    //   break;
     case Apps::Motion:
       currentScreen = std::make_unique<Screens::Motion>(this, motionController);
       break;
