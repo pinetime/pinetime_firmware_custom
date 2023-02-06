@@ -241,7 +241,9 @@ void Calculator::Refresh()
 void Calculator::OnNumEvent(lv_obj_t* obj, lv_event_t event)
 {
   //normally type into var X
-  if ((event == LV_EVENT_CLICKED) && (ptr.currentMathSymbol == ptr.math_none))
+  if ((event == LV_EVENT_CLICKED) && 
+      (ptr.currentMathSymbol == ptr.math_none) &&
+      (_getOverFlow == 0))
   {
     if(obj == ptr.num7)
     {
@@ -355,21 +357,6 @@ void Calculator::OnNumEvent(lv_obj_t* obj, lv_event_t event)
     {
        varX = (abs(varX)*10) + ptr.val_num0;
     }
-    else if(obj == ptr.numDel)
-    {
-       varX = varX/10;
-       if(varX==0)
-       {
-        _minusPrefix=1;
-       }
-       if(_getOverFlow == 1)
-       {
-        _getOverFlow=0;
-        varX=0;
-        lv_obj_set_hidden(label_x, FALSE);
-        lv_obj_set_hidden(label_error_overflow, TRUE);
-       }
-    }
     else if(obj == ptr.numDivide)
     {
       ptr.currentMathSymbol  = ptr.math_divide;
@@ -395,6 +382,25 @@ void Calculator::OnNumEvent(lv_obj_t* obj, lv_event_t event)
     }
 
     updateDisplayX();
+  }
+  //handle delete button
+  if((obj == ptr.numDel)&&
+      (event == LV_EVENT_CLICKED) && 
+      (ptr.currentMathSymbol == ptr.math_none))
+  {
+      varX = varX/10;
+      if(varX==0)
+      {
+      _minusPrefix=1;
+      }
+      if(_getOverFlow == 1)
+      {
+      _getOverFlow=0;
+      varX=0;
+      lv_obj_set_hidden(label_x, FALSE);
+      lv_obj_set_hidden(label_error_overflow, TRUE);
+      }
+      updateDisplayX();
   }
   //check math symbols state
   if ((ptr.currentMathSymbol != ptr.math_none) && (_getOverFlow == 0))
