@@ -9,7 +9,8 @@
 #include "lvgl/src/lv_core/lv_obj.h"
 #include "lvgl/src/lv_core/lv_style.h"
 #include "lvgl/src/lv_widgets/lv_line.h"
-
+#include <vector>
+using namespace std;
 #define STEP          4
 #define SIZE_X        11
 #define SIZE_Y        11
@@ -41,12 +42,12 @@ namespace Pinetime
                 uint8_t length=1;
 
                 //TODO either change to use vector or linked list
-                typedef struct st_Snake
+                struct st_Snake
                 {
                     lv_obj_t* head;
                     int16_t x,y;
                 };
-                st_Snake objSnake[100] = {};
+                vector <st_Snake> objSnake;
                 typedef struct st_Food
                 {
                     lv_obj_t* smallFood;

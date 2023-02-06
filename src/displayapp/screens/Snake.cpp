@@ -18,7 +18,8 @@ namespace
 Snake::Snake(Pinetime::Applications::DisplayApp* app,
                     System::SystemTask& systemTask)
 : Screen(app),
-systemTask{systemTask}
+systemTask{systemTask},
+objSnake(2)
 {
   systemTask.PushMessage(Pinetime::System::Messages::DisableSleeping);
   taskRefresh = lv_task_create(RefreshTaskCallback, 100, LV_TASK_PRIO_MID, this);
@@ -299,6 +300,7 @@ void Snake::checkGameOver(void)
     {
       _delayDisplay=0;
       length = 1;
+      objSnake.resize(length+1);
       //hide the previous snake
       for(uint8_t i=1; i< _arrSize; i++)
       {
@@ -337,6 +339,7 @@ void Snake::createFood(void)
   {
     length++;
     score++;
+    objSnake.resize(length+1);
     _snakeGrowUp();
     objFood._getNewFood=1;
   }
